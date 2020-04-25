@@ -1,1 +1,1 @@
-web: gunicorn usmgpm/app.py:app
+web: python -m flask run usmgpm/app.py:app
