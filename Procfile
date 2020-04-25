@@ -1,1 +1,1 @@
-web: gunicorn usmgpm/app:app
+web: gunicorn usmgpm.app:app
