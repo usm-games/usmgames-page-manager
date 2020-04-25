@@ -1,2 +1,4 @@
 flask==1.1.2
 pytest==5.4.1
+gunicorn==20.0.4
+Flask-Heorku==0.1.9
