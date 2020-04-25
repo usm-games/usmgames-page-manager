@@ -1,0 +1,1 @@
+web: gunicorn usmgpm/app.py:app
