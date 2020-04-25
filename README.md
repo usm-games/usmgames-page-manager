@@ -1,2 +1,3 @@
-# usmgames-page-manager
-Code for the usm-games.github.io webpage
+# USM Games Page Manager
+
+REST API for the USM Games Page Manager
