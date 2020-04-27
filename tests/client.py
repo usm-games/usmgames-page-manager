@@ -2,7 +2,7 @@ import os
 import tempfile
 
 import pytest
-import app
+from usmgpm.app import app
 
 
 @pytest.fixture
