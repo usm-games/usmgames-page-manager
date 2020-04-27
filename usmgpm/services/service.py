@@ -5,25 +5,7 @@ from abc import ABC
 
 import requests
 
-
-class ServiceError(Exception):
-    pass
-
-
-class NotFoundError(ServiceError):
-    pass
-
-
-class InvalidDataError(ServiceError):
-    pass
-
-
-class ForbiddenError(ServiceError):
-    pass
-
-
-class UnauthorizedError(ServiceError):
-    pass
+from usmgpm.services.exceptions import *
 
 
 class Service(ABC):
@@ -65,15 +47,15 @@ class Service(ABC):
         :rtype: dict
         """
         if res.status_code == 400:
-            raise InvalidDataError()
+            raise InvalidDataError
         elif res.status_code == 401:
-            raise UnauthorizedError()
+            raise UnauthorizedError
         elif res.status_code == 403:
-            raise ForbiddenError()
+            raise ForbiddenError
         elif res.status_code == 404:
-            raise NotFoundError()
+            raise NotFoundError
         elif res.status_code >= 400:
-            raise ServiceError()
+            raise ServiceError('Unknown Error')
         return json.loads(res.content.decode())
 
     def get(self, path: str):
