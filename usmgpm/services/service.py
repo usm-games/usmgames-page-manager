@@ -58,15 +58,17 @@ class Service(ABC):
             raise ServiceError('Unknown Error')
         return json.loads(res.content.decode())
 
-    def get(self, path: str):
+    def get(self, path: str, params: dict = None):
         """
         Make a GET request to the given path.
         :param path: The path in the service where to make the request
         :type path: str
+        :param params: Query params for the request
+        :type params: dict
         :return: The returned JSON serialized as a dict
         :rtype: dict
         """
-        req = requests.get(os.path.join(self.url, path), headers=self.headers)
+        req = requests.get(os.path.join(self.url, path), headers=self.headers, params=params)
         data = self._process_response(req)
         return data
 

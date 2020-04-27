@@ -1,6 +1,8 @@
-from usmgpm.services.wp_models import WPAuth
+from usmgpm.models.challenge import ChallengeType
 
-from services.service import Service
+from usmgpm.services.service import Service
+from usmgpm.services.wp_models import WPAuth
+from usmgpm.services.wp_models import WPChallenge
 
 
 class WordPressService(Service):
@@ -14,6 +16,16 @@ class WordPressService(Service):
         """
         return 'http://www.usmgames.cl/wp-json/'
 
+    @staticmethod
+    def to_challenge_slug(c_type: ChallengeType) -> str:
+        if c_type == ChallengeType.ART:
+            return 'chllng_art'
+        if c_type == ChallengeType.MUSIC:
+            return 'chllng_music'
+        if c_type == ChallengeType.PROGRAMMING:
+            return 'chllng_programming'
+        raise ValueError('The given type is not valid')
+
     def login(self, username, password):
         credentials = {
             'username': username,
@@ -22,3 +34,15 @@ class WordPressService(Service):
         auth = WPAuth.from_json(self.post('jwt-auth/v1/token', credentials))
         self.set_token(auth.token)
         return auth
+
+    def get_challenges(self, c_type: ChallengeType):
+        slug = self.to_challenge_slug(c_type)
+        endpoint = f"wp/v2/{slug}"
+        return list(map(WPChallenge.from_json, self.get(endpoint)))
+
+    def publish_challenge(self, challenge: WPChallenge, status: str = 'publish'):
+        slug = self.to_challenge_slug(challenge.type)
+        payload = challenge.json
+        del payload['slug']
+        payload['status'] = status
+        return self.post(f'wp/v2/{slug}/', payload)
