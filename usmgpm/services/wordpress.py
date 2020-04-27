@@ -40,9 +40,28 @@ class WordPressService(Service):
         endpoint = f"wp/v2/{slug}"
         return list(map(WPChallenge.from_json, self.get(endpoint)))
 
+    def get_challenge(self, id: int, c_type: ChallengeType):
+        slug = self.to_challenge_slug(c_type)
+        endpoint = f"wp/v2/{slug}/{id}"
+        return WPChallenge.from_json(self.get(endpoint))
+
+    def get_earnings(self):
+        slug = 'gamipress-user-earnings'
+        endpoint = f"wp/v2/{slug}"
+        return self.get(endpoint)
+
+    def award_user(self, user_id: int, challenge: WPChallenge):
+        slug = 'gamipress-user-earnings'
+        endpoint = f"wp/v2/{slug}"
+        return self.post(endpoint, {
+            'user_id': user_id,
+            'post_id': challenge.id,
+            'post_type': self.to_challenge_slug(challenge.type)
+        })
+
     def publish_challenge(self, challenge: WPChallenge, status: str = 'publish'):
         slug = self.to_challenge_slug(challenge.type)
         payload = challenge.json
         del payload['slug']
         payload['status'] = status
-        return self.post(f'wp/v2/{slug}/', payload)
+        self.post(f'wp/v2/{slug}/', payload)

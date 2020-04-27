@@ -48,3 +48,9 @@ def test_publish_challenge():
 
     service.login(admin_username, admin_password)
     service.publish_challenge(challenge, 'private')
+
+
+def test_retrieve_earnings():
+    service = WordPressService()
+    service.login(admin_username, admin_password)
+    service.get_earnings()

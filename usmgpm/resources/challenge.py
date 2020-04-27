@@ -2,6 +2,7 @@ from flask import jsonify
 from flask_restful import Resource, reqparse
 
 from usmgpm.models.db import db
+from usmgpm.services import WordPressService, WPChallenge
 from usmgpm.models.challenge import Challenge, ChallengeType
 
 __all__ = ['ChallengeList', 'ChallengeInstance']
@@ -26,6 +27,10 @@ class ChallengeList(Resource):
         )
         db.session.add(instance)
         db.session.commit()
+
+        service = WordPressService()
+        wp_challenge = WPChallenge.from_challenge(instance)
+        service.publish_challenge(wp_challenge)
         return jsonify(instance.json)
 
 

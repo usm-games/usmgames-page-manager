@@ -1,4 +1,4 @@
-from usmgpm.models.challenge import ChallengeType
+from usmgpm.models.challenge import ChallengeType, Challenge
 
 
 class WPChallenge:
@@ -33,6 +33,15 @@ class WPChallenge:
             c_type=c_type,
             content=data['content']['rendered'],
             c_id=data['id']
+        )
+
+    @staticmethod
+    def from_challenge(challenge: Challenge):
+        return WPChallenge(
+            title=challenge.title,
+            c_type=challenge.type,
+            content=challenge.description,
+            c_id=challenge.wp_id
         )
 
     @property
