@@ -36,6 +36,19 @@ class Service(ABC):
     def set_token(self, token: str, t_type: str = "Bearer"):
         self.authorization = f"{t_type} {token}"
 
+    def remove_token(self):
+        self.authorization = None
+
+    @property
+    def token(self):
+        if self.authorization:
+            return self.authorization.split(' ')[1]
+
+    @property
+    def token_type(self):
+        if self.authorization:
+            return self.authorization.split(' ')[0]
+
     @staticmethod
     def _process_response(res: requests.Response):
         """

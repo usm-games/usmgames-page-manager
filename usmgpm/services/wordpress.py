@@ -1,6 +1,7 @@
+from services.wp_models.wp_user import WPUser
 from usmgpm.models.challenge import ChallengeType
 
-from usmgpm.services.service import Service
+from usmgpm.services.service import Service, ForbiddenError
 from usmgpm.services.wp_models import WPAuth
 from usmgpm.services.wp_models import WPChallenge
 
@@ -15,6 +16,15 @@ class WordPressService(Service):
         :rtype: str
         """
         return 'http://www.usmgames.cl/wp-json/'
+
+    @property
+    def is_logged_in(self):
+        """
+        This property returns the URL where requests will be made
+        :return: URL where requests are made
+        :rtype: str
+        """
+        return self.authorization is not None
 
     @staticmethod
     def to_challenge_slug(c_type: ChallengeType) -> str:
@@ -34,6 +44,23 @@ class WordPressService(Service):
         auth = WPAuth.from_json(self.post('jwt-auth/v1/token', credentials))
         self.set_token(auth.token)
         return auth
+
+    def validate_token(self, token: str, type: str = 'Bearer'):
+        old_authorization = self.authorization.split(' ') if self.authorization else None
+        self.set_token(token, type)
+        try:
+            self.post('jwt-auth/v1/token/validate')
+        except ForbiddenError:
+            if old_authorization:
+                self.set_token(old_authorization[1], old_authorization[0])
+            else:
+                self.remove_token()
+            return False
+        return True
+
+    def me(self):
+        endpoint = f"wp/v2/users/me"
+        return WPUser.from_json(self.get(endpoint, {'context': 'edit'}))
 
     def get_challenges(self, c_type: ChallengeType):
         slug = self.to_challenge_slug(c_type)
@@ -64,4 +91,4 @@ class WordPressService(Service):
         payload = challenge.json
         del payload['slug']
         payload['status'] = status
-        self.post(f'wp/v2/{slug}/', payload)
+        return self.post(f'wp/v2/{slug}/', payload)
