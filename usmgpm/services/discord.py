@@ -46,6 +46,5 @@ class DiscordWebhookService(Service):
         return self.post(data=payload)
 
     def post_challenge(self, challenge: WPChallenge):
-        self.post_message(f'<:LogoUSMGames:700829406737989652>{challenge.emoji*3}<:LogoUSMGames:700829406737989652>')
-        message = f"¡Se ha publicado un nuevo desafío de {challenge.spanish_type}!"
+        message = f"{challenge.emoji} ¡Se ha publicado un nuevo desafío de {challenge.spanish_type}! {challenge.emoji*3}"
         return self.post_embed(challenge.title, challenge.content, message)
