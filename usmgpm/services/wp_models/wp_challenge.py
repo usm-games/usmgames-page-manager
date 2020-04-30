@@ -54,3 +54,23 @@ class WPChallenge:
 
     def __str__(self):
         return f"WPChallenge(title='{self.title}', slug='{self.slug}', type={self.type})"
+
+    @property
+    def spanish_type(self):
+        if self.type == ChallengeType.PROGRAMMING:
+            return 'programación'
+        if self.type == ChallengeType.ART:
+            return 'arte'
+        if self.type == ChallengeType.MUSIC:
+            return 'música'
+        raise ValueError('Unexpected challenge type')
+
+    @property
+    def emoji(self):
+        if self.type == ChallengeType.PROGRAMMING:
+            return '🔧'
+        if self.type == ChallengeType.ART:
+            return '🖌'
+        if self.type == ChallengeType.MUSIC:
+            return '🎶'
+        raise ValueError('Unexpected challenge type')

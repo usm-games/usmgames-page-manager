@@ -19,5 +19,33 @@ class DiscordWebhookService(Service):
         discord_pass = os.environ['DISCORD_HOOK_PASS']
         return f"https://discordapp.com/api/webhooks/{discord_id}/{discord_pass}"
 
-    def post_on_discord(self):
-        pass
+    @staticmethod
+    def generate_embed(title: str, description: str, title_url: str = None, footer_text: str = None,
+                       hex_color: str = None):
+        embed = {
+            'title': title,
+            'description': description
+        }
+        if hex_color:
+            embed['color'] = hex_color
+        if footer_text:
+            embed['footer'] = {'text': footer_text}
+        if title_url:
+            embed['url'] = title_url
+        return embed
+
+    def post_message(self, message: str):
+        return self.post(data={'content': message})
+
+    def post_embed(self, title: str, description: str, message: str = None):
+        payload = {
+            'embeds': [DiscordWebhookService.generate_embed(title, description)]
+        }
+        if message:
+            payload['content'] = message
+        return self.post(data=payload)
+
+    def post_challenge(self, challenge: WPChallenge):
+        self.post_message(f'<:LogoUSMGames:700829406737989652>{challenge.emoji*3}<:LogoUSMGames:700829406737989652>')
+        message = f"¡Se ha publicado un nuevo desafío de {challenge.spanish_type}!"
+        return self.post_embed(challenge.title, challenge.content, message)

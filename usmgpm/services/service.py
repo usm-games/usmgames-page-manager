@@ -60,16 +60,20 @@ class Service(ABC):
         :rtype: dict
         """
         if res.status_code == 400:
-            raise InvalidDataError
+            raise InvalidDataError(res)
         elif res.status_code == 401:
-            raise UnauthorizedError
+            raise UnauthorizedError(res)
         elif res.status_code == 403:
-            raise ForbiddenError
+            raise ForbiddenError(res)
         elif res.status_code == 404:
-            raise NotFoundError
+            raise NotFoundError(res)
         elif res.status_code >= 400:
-            raise ServiceError('Unknown Error')
-        return json.loads(res.content.decode())
+            raise ServiceError()
+        decoded = res.content.decode()
+        try:
+            return json.loads(decoded)
+        except ValueError:
+            return decoded
 
     def get(self, path: str, params: dict = None):
         """
@@ -85,7 +89,7 @@ class Service(ABC):
         data = self._process_response(req)
         return data
 
-    def post(self, path: str, data: dict = None):
+    def post(self, path: str = None, data: dict = None):
         """
         Make a POST request to the given path.
         :param path: The path in the service where to make the request
@@ -95,7 +99,8 @@ class Service(ABC):
         :return: The returned JSON serialized as a dict
         :rtype: dict
         """
-        req = requests.post(os.path.join(self.url, path), json=data, headers=self.headers)
+        final_url = self.url if path is None else os.path.join(self.url, path)
+        req = requests.post(final_url, json=data, headers=self.headers)
         data = self._process_response(req)
         return data
 
