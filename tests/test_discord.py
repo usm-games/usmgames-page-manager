@@ -1,4 +1,4 @@
-import os
+import time
 
 import pytest
 
@@ -14,9 +14,9 @@ def test_post_on_discord():
     from usmgpm.services.discord import DiscordWebhookService
 
     service = DiscordWebhookService()
-    service.post_embed_on_discord('This is a test webhook', 'This is a description for the test embed. If you see '
-                                                            'this then it\'s working! But please ignore this'
-                                                            ' message')
+    service.post_embed('This is a test webhook', 'This is a description for the test embed. If you see '
+                                                 'this then it\'s working! But please ignore this'
+                                                 ' message')
 
 
 def test_post_challenge():
@@ -30,3 +30,4 @@ def test_post_challenge():
         challenge = WPChallenge(f'This is a test {str(t)} challenge', t,
                                 f'This challenge consists on doing {str(t)} stuff.')
         service.post_challenge(challenge)
+        time.sleep(1)
