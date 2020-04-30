@@ -70,7 +70,10 @@ def test_publish_challenge():
     service.logout()
 
     service.login(admin_username, admin_password)
-    service.publish_challenge(challenge, 'private')
+    c = service.publish_challenge(challenge, 'private')
+
+    me = service.me()
+    service.award_user(me.id, c)
 
 
 def test_retrieve_earnings():
