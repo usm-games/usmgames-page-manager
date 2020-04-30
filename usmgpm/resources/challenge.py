@@ -31,8 +31,6 @@ class ChallengeList(Resource):
             description=args['description']
         )
 
-        db.session.add(instance)
-
         service: WordPressService = g.wordpress
         if not service.is_logged_in:
             res = jsonify({'message': 'Not logged in'})
@@ -41,7 +39,8 @@ class ChallengeList(Resource):
         wp_challenge = WPChallenge.from_challenge(instance)
 
         try:
-            service.publish_challenge(wp_challenge, status=args['status'])
+            wp_c = service.publish_challenge(wp_challenge, status=args['status'])
+            instance.wp_id = wp_c.id
         except ForbiddenError:
             res = jsonify({'message': 'You do not have permission to publish a challenge'})
             res.status_code = 403
@@ -51,6 +50,7 @@ class ChallengeList(Resource):
             res.status_code = 500
             return res
 
+        db.session.add(instance)
         db.session.commit()
         res = jsonify(instance.json)
         res.status_code = 200

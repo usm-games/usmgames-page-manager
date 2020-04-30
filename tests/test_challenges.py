@@ -57,3 +57,6 @@ class TestChallenges:
         for cat in ChallengeType:
             res = publish_challenge(str(cat), service.token)
             assert res.status_code == 200
+
+        challenges = json.loads(self.client.get('/api/challenges').data)
+        assert len(challenges) == len(ChallengeType)

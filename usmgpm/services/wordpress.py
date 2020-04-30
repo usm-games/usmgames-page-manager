@@ -91,4 +91,4 @@ class WordPressService(Service):
         payload = challenge.json
         del payload['slug']
         payload['status'] = status
-        return self.post(f'wp/v2/{slug}/', payload)
+        return WPChallenge.from_json(self.post(f'wp/v2/{slug}/', payload))
