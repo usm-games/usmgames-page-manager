@@ -18,6 +18,7 @@ class Challenge(db.Model):
 
     title = db.Column(db.UnicodeText, nullable=False)
     description = db.Column(db.UnicodeText, nullable=False)
+    wp_id = db.Column(db.Integer, nullable=True)
 
     @property
     def json(self):

@@ -1,11 +1,12 @@
+from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
 
-db: SQLAlchemy = None
+db = SQLAlchemy()
 
 
-def init_db(app):
+def init_db():
     global db
-    db = SQLAlchemy(app)
+    db.init_app(current_app)
 
     # noinspection PyUnresolvedReferences
     from usmgpm.models.challenge import Challenge
