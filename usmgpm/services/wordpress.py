@@ -45,6 +45,9 @@ class WordPressService(Service):
         self.set_token(auth.token)
         return auth
 
+    def logout(self):
+        self.remove_token()
+
     def validate_token(self, token: str, type: str = 'Bearer'):
         old_authorization = self.authorization.split(' ') if self.authorization else None
         self.set_token(token, type)

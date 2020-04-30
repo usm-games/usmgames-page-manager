@@ -30,12 +30,14 @@ def test_login():
     assert user_data.email == auth.email
     assert user_data.username == auth.username
     assert user_data.display_name == auth.display_name
+    service.logout()
 
     auth = service.login(admin_username, admin_password)
     user_data = service.me()
     assert user_data.email == auth.email
     assert user_data.username == auth.username
     assert user_data.display_name == auth.display_name
+    service.logout()
 
     assert not service.validate_token('asdf')
     assert service.validate_token(service.token, service.token_type)
@@ -66,6 +68,7 @@ def test_publish_challenge():
     service.login(username, password)
     with pytest.raises(ForbiddenError):
         service.publish_challenge(challenge)
+    service.logout()
 
     service.login(admin_username, admin_password)
     service.publish_challenge(challenge, 'private')
