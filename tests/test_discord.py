@@ -17,6 +17,7 @@ def test_post_on_discord():
     service.post_embed('This is a test webhook', 'This is a description for the test embed. If you see '
                                                  'this then it\'s working! But please ignore this'
                                                  ' message')
+    time.sleep(1)
 
 
 def test_post_challenge():
