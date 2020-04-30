@@ -37,7 +37,6 @@ def test_login():
     assert user_data.email == auth.email
     assert user_data.username == auth.username
     assert user_data.display_name == auth.display_name
-    service.logout()
 
     assert not service.validate_token('asdf')
     assert service.validate_token(service.token, service.token_type)
