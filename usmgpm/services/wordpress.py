@@ -1,4 +1,4 @@
-from services.wp_models.wp_user import WPUser
+from usmgpm.services.wp_models.wp_user import WPUser
 from usmgpm.models.challenge import ChallengeType
 
 from usmgpm.services.service import Service, ForbiddenError

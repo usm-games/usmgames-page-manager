@@ -1,7 +1,7 @@
 from flask import jsonify, g
 from flask_restful import Resource, reqparse
 
-from services.exceptions import ServiceError, ForbiddenError
+from usmgpm.services.exceptions import ServiceError, ForbiddenError
 from usmgpm.models.db import db
 from usmgpm.services import WordPressService, WPChallenge
 from usmgpm.models.challenge import Challenge, ChallengeType

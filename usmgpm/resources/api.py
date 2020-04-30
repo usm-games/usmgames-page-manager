@@ -4,7 +4,7 @@ from flask import request
 from flask import Blueprint, g, current_app
 from flask_restful import Api
 
-from services import WordPressService
+from usmgpm.services import WordPressService
 
 
 def append_wp_service(f):

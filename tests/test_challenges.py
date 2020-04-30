@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from services import WordPressService
+from usmgpm.services import WordPressService
 from usmgpm.app import init_app
 
 
