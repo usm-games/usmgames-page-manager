@@ -24,6 +24,7 @@ class TestChallenges:
     def test_empty_db(self):
         rv = self.client.get('/api/challenges')
 
+        assert rv.status_code == 200
         assert len(json.loads(rv.data)) == 0
 
     def test_publish_challenge(self):
@@ -36,7 +37,8 @@ class TestChallenges:
                 'type': cat_name,
                 'title': f'A test {cat_name} challenge',
                 'description': f'This is a test challenge made for the {cat_name} category',
-                'status': 'private'
+                'status': 'private',
+                'requirements': ['Requirement 1', 'Requirement 2', 'Requirement 3']
             }
             headers = None
             if token:
@@ -60,3 +62,5 @@ class TestChallenges:
 
         challenges = json.loads(self.client.get('/api/challenges').data)
         assert len(challenges) == len(ChallengeType)
+        for c in challenges:
+            assert len(c['requirements']) == 3

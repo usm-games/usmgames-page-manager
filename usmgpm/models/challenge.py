@@ -20,6 +20,8 @@ class Challenge(db.Model):
     description = db.Column(db.UnicodeText, nullable=False)
     wp_id = db.Column(db.Integer, nullable=True)
 
+    requirements = db.relationship('ChallengeRequirement', backref=db.backref('challenges', lazy=False))
+
     @property
     def json(self):
         return {
