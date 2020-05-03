@@ -1,3 +1,5 @@
+import validators
+
 from flask import jsonify, g
 from flask_restful import Resource, reqparse
 
@@ -30,18 +32,30 @@ class ChallengeSubmissionList(Resource):
             res.status_code = 401
             return res
 
+        sub: Submission = Submission.query. \
+            filter(Submission.user_id == user.id). \
+            filter(Submission.challenge_id == c_id). \
+            first()
+        if sub is not None:
+            res = jsonify({'message': 'You have already made a submission for this challenge'})
+            res.status_code = 400
+            return res
         args = submission_parser.parse_args()
         evidences = list()
         for evidence in args['evidence']:
             evidence: dict = evidence
             description: str = evidence.get('description').replace(';', '')
             url: str = evidence.get('url').replace(';', '')
+            if not validators.url(url):
+                res = jsonify({'mmessage': f'An evidence has an invalid url: {url}'})
+                res.status_code = 400
+                return res
             if url and description:
                 url = url.replace(';', '')
                 description = description.replace(';', '')
                 evidences.append(f'{url};{description}')
             else:
-                res = jsonify({'message': 'And evidence is missing a description or URL'})
+                res = jsonify({'message': 'An evidence is missing a description or URL'})
                 res.status_code = 400
                 return res
 
@@ -67,7 +81,12 @@ class ChallengeSubmission(Resource):
             filter(Submission.user_id == u_id).\
             filter(Submission.challenge_id == c_id).\
             first()
-        return jsonify(sub.json)
+        if sub is None:
+            res = jsonify({'message': 'No submission has been made by this user'})
+            res.status_code = 404
+            return res
+        else:
+            return jsonify(sub.json)
 
 
 class Evaluation(Resource):
@@ -91,6 +110,38 @@ class Evaluation(Resource):
             first()
         if sub.approved is not None:
             res = jsonify({'message': 'This submission has already been evaluated'})
+            res.status_code = 400
+            return res
+
+        args = evaluation_parser.parse_args()
+        comment, approved = args['comment'], args['approved']
+
+        sub.evaluation_note = comment
+        sub.approved = approved
+        db.session.commit()
+
+        return jsonify(sub.json)
+
+    def put(self, c_id: int, u_id: int):
+        service: WordPressService = g.wordpress
+        try:
+            user = service.me()
+        except UnauthorizedError:
+            res = jsonify({'message': 'You need to be authenticated to evaluate a submission'})
+            res.status_code = 401
+            return res
+
+        if "administrator" not in user.roles:
+            res = jsonify({'message': 'Only an administrator can evaluate a submission'})
+            res.status_code = 403
+            return res
+
+        sub: Submission = Submission.query.\
+            filter(Submission.user_id == u_id).\
+            filter(Submission.challenge_id == c_id).\
+            first()
+        if sub.approved is None:
+            res = jsonify({'message': 'This submission has not been evaluated'})
             res.status_code = 400
             return res
 
