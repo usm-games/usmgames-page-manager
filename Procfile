@@ -1,1 +1,1 @@
-web: gunicorn -w 4 usmgpm.app:init_app()
+web: gunicorn -w 4 "usmgpm.app:init_app()"
