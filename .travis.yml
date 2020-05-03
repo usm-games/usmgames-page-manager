@@ -7,6 +7,8 @@ python:
 # install dependencies
 install:
   - pip install -r requirements.txt
+  - flask db init
+  - flask db migrate
 
 script:
   - pytest -v
