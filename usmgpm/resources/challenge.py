@@ -1,9 +1,10 @@
 from flask import jsonify, g
 from flask_restful import Resource, reqparse
 
+from usmgpm.models.requirement import ChallengeRequirement
 from usmgpm.services.exceptions import ServiceError, ForbiddenError
 from usmgpm.models.db import db
-from usmgpm.services import WordPressService, WPChallenge
+from usmgpm.services import WordPressService, WPChallenge, DiscordWebhookService
 from usmgpm.models.challenge import Challenge, ChallengeType
 
 __all__ = ['ChallengeList', 'ChallengeInstance']
@@ -13,6 +14,8 @@ challenge_parser.add_argument('type', type=ChallengeType, choices=list(Challenge
 challenge_parser.add_argument('title', type=str, required=True)
 challenge_parser.add_argument('description', type=str, required=True)
 challenge_parser.add_argument('status', type=str, choices=['publish', 'private', 'draft'], default='publish')
+challenge_parser.add_argument('requirements', type=str, required=True, action='append')
+challenge_parser.add_argument('notify', type=bool, default=True)
 
 getter_parser = reqparse.RequestParser()
 getter_parser.add_argument('fetch', action='store_true')
@@ -31,6 +34,10 @@ class ChallengeList(Resource):
             description=args['description']
         )
 
+        for requirement in args['requirements']:
+            r = ChallengeRequirement(description=requirement)
+            instance.requirements.append(r)
+
         service: WordPressService = g.wordpress
         if not service.is_logged_in:
             res = jsonify({'message': 'Not logged in'})
@@ -40,6 +47,9 @@ class ChallengeList(Resource):
 
         try:
             wp_c = service.publish_challenge(wp_challenge, status=args['status'])
+            if args['notify']:
+                discord = DiscordWebhookService()
+                discord.post_challenge(wp_c)
             instance.wp_id = wp_c.id
         except ForbiddenError:
             res = jsonify({'message': 'You do not have permission to publish a challenge'})
@@ -69,7 +79,9 @@ class ChallengeInstance(Resource):
         fetch_wp = args.get('fetch')
         if fetch_wp:
             if challenge.wp_id is None:
-                return jsonify({'message': 'This challenge does not have an associated usmgames.cl challenge'}), 400
+                res = jsonify({'message': 'This challenge does not have an associated usmgames.cl challenge'})
+                res.status_code = 400
+                return res
             service: WordPressService = g.wordpress
             wp_challenge = service.get_challenge(challenge.wp_id, challenge.type)
             data['wp'] = wp_challenge.json

@@ -1,7 +1,5 @@
 import os
 
-from usmgpm.models.challenge import ChallengeType
-
 from usmgpm.services.service import Service
 from usmgpm.services.wp_models import WPChallenge
 
@@ -46,5 +44,5 @@ class DiscordWebhookService(Service):
         return self.post(data=payload)
 
     def post_challenge(self, challenge: WPChallenge):
-        message = f"{challenge.emoji} ¡Se ha publicado un nuevo desafío de {challenge.spanish_type}! {challenge.emoji*3}"
+        message = f"{challenge.emoji*3} ¡Se ha publicado un nuevo desafío de {challenge.spanish_type}! {challenge.emoji*3}"
         return self.post_embed(challenge.title, challenge.content, message)

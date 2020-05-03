@@ -1,4 +1,4 @@
-from usmgpm.models.challenge import ChallengeType, Challenge
+from usmgpm.models.challenge import Challenge, ChallengeType
 
 
 class WPChallenge:
@@ -37,10 +37,17 @@ class WPChallenge:
 
     @staticmethod
     def from_challenge(challenge: Challenge):
+        description = f"<p>{challenge.description}</p>"
+
+        req_list = "<ul>"
+        for req in challenge.requirements:
+            req_list += f"<li>{req.description}</li>"
+        req_list += "</ul>"
+
         return WPChallenge(
             title=challenge.title,
             c_type=challenge.type,
-            content=challenge.description,
+            content=description + req_list,
             c_id=challenge.wp_id
         )
 
