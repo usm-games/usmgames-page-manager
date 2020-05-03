@@ -1,7 +1,7 @@
 from flask import jsonify, g
 from flask_restful import Resource, reqparse
 
-from services import WordPressService
+from usmgpm.services.wordpress import WordPressService
 
 login_parser = reqparse.RequestParser()
 login_parser.add_argument('username', type=str, required=True)
