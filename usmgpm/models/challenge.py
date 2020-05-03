@@ -13,15 +13,24 @@ class ChallengeType(Enum):
 
 
 class Challenge(db.Model):
+    __table_name__ = 'challenge'
+    __table_args__ = {
+        'extend_existing': True
+    }
+
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.Enum(ChallengeType), nullable=False)
 
     title = db.Column(db.UnicodeText, nullable=False)
     description = db.Column(db.UnicodeText, nullable=False)
+    wp_id = db.Column(db.Integer, nullable=True)
+
+    requirements = db.relationship('ChallengeRequirement', backref=db.backref('challenge', lazy=False))
 
     @property
     def json(self):
         return {
+            'id': self.id,
             'type': str(self.type),
             'title': self.title,
             'description': self.description,
