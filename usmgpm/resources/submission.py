@@ -108,6 +108,10 @@ class Evaluation(Resource):
             filter(Submission.user_id == u_id).\
             filter(Submission.challenge_id == c_id).\
             first()
+        if sub is None:
+            res = jsonify({'message': 'This submission does not exist'})
+            res.status_code = 400
+            return res
         if sub.approved is not None:
             res = jsonify({'message': 'This submission has already been evaluated'})
             res.status_code = 400
