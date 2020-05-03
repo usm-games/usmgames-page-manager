@@ -17,5 +17,3 @@ def init_db():
     from usmgpm.models.requirement import ChallengeRequirement
     # noinspection PyUnresolvedReferences
     from usmgpm.models.evaluation import Submission
-
-    db.create_all()
