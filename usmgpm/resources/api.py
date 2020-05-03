@@ -4,6 +4,7 @@ from flask import request
 from flask import Blueprint, g, current_app
 from flask_restful import Api
 
+from usmgpm.resources.submission import ChallengeSubmissionList, ChallengeSubmission, UserSubmissionList, Evaluation
 from usmgpm.services import WordPressService
 
 
@@ -28,5 +29,11 @@ def init_api():
 
     api.add_resource(ChallengeList, '/challenges')
     api.add_resource(ChallengeInstance, '/challenges/<id>')
+
+    api.add_resource(ChallengeSubmissionList, '/challenges/<c_id>/submissions')
+    api.add_resource(ChallengeSubmission, '/challenges/<c_id>/submissions/<u_id>')
+    api.add_resource(Evaluation, '/challenges/<c_id>/submissions/<u_id>/evaluate')
+
+    api.add_resource(UserSubmissionList, '/users/<u_id>/submissions')
 
     current_app.register_blueprint(bp, url_prefix='/api')

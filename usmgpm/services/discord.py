@@ -1,7 +1,5 @@
 import os
 
-from usmgpm.models.challenge import ChallengeType
-
 from usmgpm.services.service import Service
 from usmgpm.services.wp_models import WPChallenge
 

@@ -15,6 +15,7 @@ challenge_parser.add_argument('title', type=str, required=True)
 challenge_parser.add_argument('description', type=str, required=True)
 challenge_parser.add_argument('status', type=str, choices=['publish', 'private', 'draft'], default='publish')
 challenge_parser.add_argument('requirements', type=str, required=True, action='append')
+challenge_parser.add_argument('notify', type=bool, default=True)
 
 getter_parser = reqparse.RequestParser()
 getter_parser.add_argument('fetch', action='store_true')
@@ -44,16 +45,17 @@ class ChallengeList(Resource):
             return res
         wp_challenge = WPChallenge.from_challenge(instance)
 
-        discord = DiscordWebhookService()
         try:
             wp_c = service.publish_challenge(wp_challenge, status=args['status'])
-            discord.post_challenge(wp_c)
+            if args['notify']:
+                discord = DiscordWebhookService()
+                discord.post_challenge(wp_c)
             instance.wp_id = wp_c.id
         except ForbiddenError:
             res = jsonify({'message': 'You do not have permission to publish a challenge'})
             res.status_code = 403
             return res
-        except ServiceError as e:
+        except ServiceError:
             res = jsonify({'message': 'Could not publish challenge on usmgames.cl'})
             res.status_code = 500
             return res
@@ -77,7 +79,9 @@ class ChallengeInstance(Resource):
         fetch_wp = args.get('fetch')
         if fetch_wp:
             if challenge.wp_id is None:
-                return jsonify({'message': 'This challenge does not have an associated usmgames.cl challenge'}), 400
+                res = jsonify({'message': 'This challenge does not have an associated usmgames.cl challenge'})
+                res.status_code = 400
+                return res
             service: WordPressService = g.wordpress
             wp_challenge = service.get_challenge(challenge.wp_id, challenge.type)
             data['wp'] = wp_challenge.json

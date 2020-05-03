@@ -38,7 +38,8 @@ class TestChallenges:
                 'title': f'A test {cat_name} challenge',
                 'description': f'This is a test challenge made for the {cat_name} category',
                 'status': 'private',
-                'requirements': ['Requirement 1', 'Requirement 2', 'Requirement 3']
+                'requirements': ['Requirement 1', 'Requirement 2', 'Requirement 3'],
+                'notify': False
             }
             headers = None
             if token:
