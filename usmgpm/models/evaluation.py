@@ -19,9 +19,27 @@ class Submission(db.Model):
     user_id = db.Column(db.Integer, nullable=False)
     challenge_id = db.Column(db.Integer, db.ForeignKey(Challenge.id), nullable=False)
 
+    def _parse_content(self):
+        splitted = self.content.split(';')
+        comment = splitted[0]
+        evidence = splitted[1:]
+        if len(evidence) % 2 != 0:
+            raise ValueError("The contet is invalid")
+        n_evidence = len(evidence) // 2
+        parsed_evidence = []
+        for i_evidence in range(n_evidence):
+            parsed_evidence.append({
+                'url': evidence[i_evidence * 2],
+                'description': evidence[i_evidence * 2 + 1]
+            })
+        return {
+            'comment': comment,
+            'evidence': parsed_evidence
+        }
+
+
     @property
     def json(self):
-        splitted = self.content.split(';')
         evaluation = {
                 'approved': self.approved,
                 'comment': self.evaluation_note,
@@ -30,9 +48,6 @@ class Submission(db.Model):
             'id': self.id,
             'user_id': self.user_id,
             'challenge_id': self.challenge_id,
-            'submission': {
-                'comment': splitted[0],
-                'evidence': splitted[1:] if len(splitted) > 1 else []
-            },
+            'submission': self._parse_content(),
             'evaluation': evaluation
         }
