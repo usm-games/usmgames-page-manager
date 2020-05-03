@@ -6,3 +6,4 @@ Flask-Restful==0.3.8
 Flask-SQLAlchemy==2.4.1
 requests==2.23.0
 pytest-flask==1.0.0
+validators==0.14.3

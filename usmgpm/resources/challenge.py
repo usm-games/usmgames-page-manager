@@ -1,3 +1,5 @@
+import validators
+
 from flask import jsonify, g
 from flask_restful import Resource, reqparse
 
