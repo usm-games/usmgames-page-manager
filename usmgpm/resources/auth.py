@@ -1,6 +1,8 @@
 from flask import jsonify, g
 from flask_restful import Resource, reqparse
 
+from resources.utils import throw_error
+from services.wp_models.wp_user import WPUser
 from usmgpm.services.wordpress import WordPressService
 
 login_parser = reqparse.RequestParser()
@@ -15,3 +17,12 @@ class Login(Resource):
         auth = service.login(args['username'], args['password'])
         user = service.me()
         return jsonify({'user': user.json, 'token': auth.token})
+
+
+class Me(Resource):
+    def get(self):
+        service: WordPressService = g.wordpress
+        if not service.is_logged_in:
+            return throw_error('NEEDS_LOGIN')
+        user: WPUser = g.user
+        return jsonify(user.json)
