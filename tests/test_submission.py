@@ -14,7 +14,7 @@ admin_password = os.environ.get('TEST_ADMINPASS')
 
 @pytest.fixture()
 def app():
-    return init_app()
+    return init_app(create_all=True)
 
 
 @pytest.mark.usefixtures('client_class')

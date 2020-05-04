@@ -1,11 +1,12 @@
 import os
 
 from flask import Flask
+from flask import g
 
 from usmgpm.models import init_db
 
 
-def init_app():
+def init_app(create_all=False):
     app = Flask(__name__)
     database_url = os.environ.get('DATABASE_URL')
     if database_url is None:
@@ -15,7 +16,9 @@ def init_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     with app.app_context():
-        init_db()
+        db = init_db()
+        if create_all:
+            db.create_all()
 
     from usmgpm.resources import init_api
 
