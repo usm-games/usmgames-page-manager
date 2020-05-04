@@ -1,8 +1,7 @@
-import validators
-
 from flask import jsonify, g
 from flask_restful import Resource, reqparse
 
+from usmgpm.resources.utils import throw_error
 from usmgpm.models.requirement import ChallengeRequirement
 from usmgpm.services.exceptions import ServiceError, ForbiddenError
 from usmgpm.models.db import db
@@ -25,8 +24,12 @@ getter_parser.add_argument('fetch', action='store_true')
 
 class ChallengeList(Resource):
     def get(self):
-        challenges = Challenge.query.all()
-        return jsonify(list(map(lambda x: x.json, challenges)))
+        try:
+            challenges = Challenge.query.all()
+            return jsonify(list(map(lambda x: x.json, challenges)))
+        except Exception as e:
+            print(type(e), e)
+            raise e
 
     def post(self):
         args = challenge_parser.parse_args()
@@ -42,9 +45,7 @@ class ChallengeList(Resource):
 
         service: WordPressService = g.wordpress
         if not service.is_logged_in:
-            res = jsonify({'message': 'Not logged in'})
-            res.status_code = 401
-            return res
+            return throw_error('NEEDS_LOGIN')
         wp_challenge = WPChallenge.from_challenge(instance)
 
         try:
@@ -54,18 +55,14 @@ class ChallengeList(Resource):
                 discord.post_challenge(wp_c)
             instance.wp_id = wp_c.id
         except ForbiddenError:
-            res = jsonify({'message': 'You do not have permission to publish a challenge'})
-            res.status_code = 403
-            return res
+            return throw_error('PERMISSION_NEEDED')
         except ServiceError:
-            res = jsonify({'message': 'Could not publish challenge on usmgames.cl'})
-            res.status_code = 500
-            return res
+            return throw_error('WORDPRESS_ERROR')
 
         db.session.add(instance)
         db.session.commit()
+
         res = jsonify(instance.json)
-        res.status_code = 200
         return res
 
 
@@ -73,17 +70,13 @@ class ChallengeInstance(Resource):
     def get(self, id: int):
         challenge = Challenge.query.filter_by(id=id).first()
         if challenge is None:
-            res = jsonify({'message': 'No challenge with this id'})
-            res.status_code = 404
-            return res
+            return throw_error('NOT_FOUND_ID')
         args = getter_parser.parse_args()
         data = challenge.json
         fetch_wp = args.get('fetch')
         if fetch_wp:
             if challenge.wp_id is None:
-                res = jsonify({'message': 'This challenge does not have an associated usmgames.cl challenge'})
-                res.status_code = 400
-                return res
+                return throw_error('NO_ASSOCIATED_ACHIEV')
             service: WordPressService = g.wordpress
             wp_challenge = service.get_challenge(challenge.wp_id, challenge.type)
             data['wp'] = wp_challenge.json

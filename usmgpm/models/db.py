@@ -6,7 +6,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 
 
-def init_db():
+def init_db() -> SQLAlchemy:
     global db
     db.init_app(current_app)
     migrate.init_app(current_app, db)
@@ -17,3 +17,5 @@ def init_db():
     from usmgpm.models.requirement import ChallengeRequirement
     # noinspection PyUnresolvedReferences
     from usmgpm.models.evaluation import Submission
+
+    return db
