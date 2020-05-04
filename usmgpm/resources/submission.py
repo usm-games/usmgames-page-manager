@@ -21,6 +21,14 @@ submission_parser.add_argument('evidence', type=dict, required=True, action='app
 
 class ChallengeSubmissionList(Resource):
     def get(self, c_id: int):
+        service: WordPressService = g.wordpress
+        if not service.is_logged_in:
+            return throw_error('NEEDS_LOGIN')
+
+        user: WPUser = g.user
+        if not user.is_admin:
+            return throw_error('PERMISSION_NEEDED')
+
         subs: list = Submission.query.filter(Submission.challenge_id == c_id).all()
         return jsonify(list(map(lambda x: x.json, subs)))
 
@@ -63,12 +71,28 @@ class ChallengeSubmissionList(Resource):
 
 class UserSubmissionList(Resource):
     def get(self, u_id: int):
+        service: WordPressService = g.wordpress
+        if not service.is_logged_in:
+            return throw_error('NEEDS_LOGIN')
+
+        user: WPUser = g.user
+        if user.id != u_id and not user.is_admin:
+            return throw_error('PERMISSION_NEEDED')
+
         subs: list = Submission.query.filter(Submission.user_id == u_id).all()
         return jsonify(list(map(lambda x: x.json, subs)))
 
 
 class ChallengeSubmission(Resource):
     def get(self, c_id: int, u_id: int):
+        service: WordPressService = g.wordpress
+        if not service.is_logged_in:
+            return throw_error('NEEDS_LOGIN')
+
+        user: WPUser = g.user
+        if user.id != u_id and not user.is_admin:
+            return throw_error('PERMISSION_NEEDED')
+
         sub: Submission = Submission.query.\
             filter(Submission.user_id == u_id).\
             filter(Submission.challenge_id == c_id).\
