@@ -1,13 +1,15 @@
 import os
 
 from flask import Flask
-from flask import g
+from flask_cors import CORS
 
 from usmgpm.models import init_db
 
 
 def init_app(create_all=False):
     app = Flask(__name__)
+    CORS(app, resources={r"/api/*"})
+
     database_url = os.environ.get('DATABASE_URL')
     if database_url is None:
         database_url = os.environ.get('DATABASE_URI', 'sqlite://')
