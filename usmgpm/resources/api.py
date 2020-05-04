@@ -1,9 +1,11 @@
 from functools import wraps
 
-from flask import request, jsonify
+from flask import request
 from flask import Blueprint, g, current_app
 from flask_restful import Api
 
+from usmgpm.resources.utils import throw_error
+from usmgpm.services.exceptions import ForbiddenError
 from usmgpm.services import WordPressService
 
 
@@ -15,10 +17,12 @@ def append_wp_service(f):
         if auth:
             splitted = auth.split(' ')
             if len(splitted) != 2:
-                res = jsonify({'message': 'Bad formatted authorization header'})
-                res.status_code = 403
-                return res
+                return throw_error('INVALID_HEADER', 'Invalid Authorization header')
             service.set_token(splitted[1], splitted[0])
+            try:
+                g.user = service.me()
+            except ForbiddenError:
+                return throw_error('INVALID_TOKEN')
         g.wordpress = service
         return f(*args, **kwargs)
     return decorated_function

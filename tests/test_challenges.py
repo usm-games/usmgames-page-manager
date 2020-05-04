@@ -3,6 +3,8 @@ import os
 
 import pytest
 
+from flask import g
+
 from usmgpm.services import WordPressService
 from usmgpm.app import init_app
 
@@ -16,7 +18,7 @@ admin_password = os.environ.get('TEST_ADMINPASS')
 
 @pytest.fixture()
 def app():
-    return init_app()
+    return init_app(create_all=True)
 
 
 @pytest.mark.usefixtures('client_class')

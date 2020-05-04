@@ -47,6 +47,10 @@ class WPUser:
             'roles': self.roles
         }
 
+    @property
+    def is_admin(self):
+        return "administrator" in self.roles
+
     def __str__(self):
         return f"WPUser(id={self.id}, email='{self.email}'," \
             f" username='{self.username}', display_name='{self.display_name}')"
