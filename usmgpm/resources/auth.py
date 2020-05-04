@@ -1,8 +1,8 @@
 from flask import jsonify, g
 from flask_restful import Resource, reqparse
 
-from resources.utils import throw_error
-from services.wp_models.wp_user import WPUser
+from usmgpm.resources.utils import throw_error
+from usmgpm.services.wp_models.wp_user import WPUser
 from usmgpm.services.wordpress import WordPressService
 
 login_parser = reqparse.RequestParser()
