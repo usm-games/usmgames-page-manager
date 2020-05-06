@@ -133,7 +133,7 @@ class Evaluation(Resource):
         return jsonify(sub.json)
 
     def put(self, c_id: int, u_id: int):
-        if g.service.is_logged_in:
+        if g.wordpress.is_logged_in:
             return throw_error('NEEDS_LOGIN')
 
         user: WPUser = g.user

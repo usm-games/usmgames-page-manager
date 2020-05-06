@@ -25,7 +25,7 @@ class Challenge(db.Model):
     description = db.Column(db.UnicodeText, nullable=False)
     wp_id = db.Column(db.Integer, nullable=True)
 
-    requirements = db.relationship('ChallengeRequirement', backref=db.backref('challenge', lazy=False))
+    requirements = db.relationship('ChallengeRequirement', backref=db.backref('challenge', lazy=False), cascade="all,delete")
 
     @property
     def json(self):

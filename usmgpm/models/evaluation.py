@@ -15,9 +15,9 @@ class Submission(db.Model):
     evaluation_note = db.Column(db.Text, nullable=True, default=None)
     approved = db.Column(db.Boolean, nullable=True, default=None)
 
-    challenge = db.relationship('Challenge', backref=db.backref('challenges', lazy=False))
     user_id = db.Column(db.Integer, nullable=False)
     challenge_id = db.Column(db.Integer, db.ForeignKey(Challenge.id), nullable=False)
+    challenge = db.relationship('Challenge', backref=db.backref('submissions', lazy=False))
 
     def _parse_content(self):
         splitted = self.content.split(';')

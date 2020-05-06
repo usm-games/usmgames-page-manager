@@ -75,6 +75,11 @@ class WordPressService(Service):
         endpoint = f"wp/v2/{slug}/{id}"
         return WPChallenge.from_json(self.get(endpoint))
 
+    def delete_challenge(self, id: int, c_type: ChallengeType):
+        slug = self.to_challenge_slug(c_type)
+        endpoint = f"wp/v2/{slug}/{id}"
+        return WPChallenge.from_json(self.delete(endpoint))
+
     def get_earnings(self):
         slug = 'gamipress-user-earnings'
         endpoint = f"wp/v2/{slug}"
