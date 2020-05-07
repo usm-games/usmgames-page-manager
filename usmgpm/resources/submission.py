@@ -18,6 +18,9 @@ submission_parser = reqparse.RequestParser()
 submission_parser.add_argument('comment', type=str, required=True)
 submission_parser.add_argument('evidence', type=dict, required=True, action='append')
 
+get_submission_parser = reqparse.RequestParser()
+get_submission_parser.add_argument('not_evaluated', type=bool, required=False, default=False)
+
 
 class ChallengeSubmissionList(Resource):
     def get(self, c_id: int):
@@ -29,7 +32,12 @@ class ChallengeSubmissionList(Resource):
         if not user.is_admin:
             return throw_error('PERMISSION_NEEDED')
 
-        subs: list = Submission.query.filter(Submission.challenge_id == c_id).all()
+        subs_q = Submission.query.filter(Submission.challenge_id == c_id).\
+            order_by(Submission.submitted.desc())
+        args = get_submission_parser.parse_args()
+        if args['not_evaluated']:
+            subs_q = subs_q.filter(Submission.approved.is_(None))
+        subs: list = subs_q.all()
         return jsonify(list(map(lambda x: x.json, subs)))
 
     def post(self, c_id: int):
@@ -79,7 +87,12 @@ class UserSubmissionList(Resource):
         if user.id != u_id and not user.is_admin:
             return throw_error('PERMISSION_NEEDED')
 
-        subs: list = Submission.query.filter(Submission.user_id == u_id).all()
+        subs_q = Submission.query.filter(Submission.user_id == u_id)
+        args = get_submission_parser.parse_args()
+        if args['not_evaluated']:
+            subs_q = subs_q.filter(Submission.approved.is_(None))
+        subs: list = subs_q.order_by(Submission.submitted.desc()).all()
+
         return jsonify(list(map(lambda x: x.json, subs)))
 
 
@@ -133,7 +146,7 @@ class Evaluation(Resource):
         return jsonify(sub.json)
 
     def put(self, c_id: int, u_id: int):
-        if g.service.is_logged_in:
+        if g.wordpress.is_logged_in:
             return throw_error('NEEDS_LOGIN')
 
         user: WPUser = g.user

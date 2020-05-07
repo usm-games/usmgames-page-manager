@@ -1,3 +1,4 @@
+import json
 import os
 
 import pytest
@@ -121,7 +122,7 @@ class TestSubmissions:
                                json=evaluation, headers=headers)
         assert res.status_code == 200
 
-        # Check if submission is evaluated
+        # Check if submissions are evaluated
         res = self.client.get(f'/api/challenges/{challenge_id}/submissions/{user.id}', headers=headers)
         assert res.status_code == 200
         assert res.json['evaluation'] is not None

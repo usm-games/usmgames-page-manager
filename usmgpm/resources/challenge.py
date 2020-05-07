@@ -1,6 +1,7 @@
 from flask import jsonify, g
 from flask_restful import Resource, reqparse
 
+from usmgpm.services.wp_models.wp_user import WPUser
 from usmgpm.resources.utils import throw_error
 from usmgpm.models.requirement import ChallengeRequirement
 from usmgpm.services.exceptions import ServiceError, ForbiddenError
@@ -24,12 +25,8 @@ getter_parser.add_argument('fetch', action='store_true')
 
 class ChallengeList(Resource):
     def get(self):
-        try:
-            challenges = Challenge.query.all()
-            return jsonify(list(map(lambda x: x.json, challenges)))
-        except Exception as e:
-            print(type(e), e)
-            raise e
+        challenges = Challenge.query.order_by(Challenge.published.desc()).all()
+        return jsonify(list(map(lambda x: x.json, challenges)))
 
     def post(self):
         args = challenge_parser.parse_args()
@@ -81,3 +78,22 @@ class ChallengeInstance(Resource):
             wp_challenge = service.get_challenge(challenge.wp_id, challenge.type)
             data['wp'] = wp_challenge.json
         return jsonify(data)
+
+    def delete(self, id: int):
+        if not g.wordpress.is_logged_in:
+            return throw_error('NEEDS_LOGIN')
+
+        user: WPUser = g.user
+        if not user.is_admin:
+            return throw_error('PERMISSION_NEEDED')
+
+        challenge = Challenge.query.filter_by(id=id).first()
+        if challenge is None:
+            return throw_error('NOT_FOUND_ID')
+
+        service: WordPressService = g.wordpress
+        service.delete_challenge(challenge.wp_id, challenge.type)
+
+        db.session.delete(challenge)
+        db.session.commit()
+        return jsonify({'message': 'Deleted challenge from https://www.usmgames.cl/ and from server'})
