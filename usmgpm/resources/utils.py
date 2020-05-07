@@ -12,6 +12,7 @@ errors = {
     'PERMISSION_NEEDED': (403, 'You do not have permission to access this resource'),
     'INVALID_TOKEN': (403, 'Invalid token'),
     'NOT_FOUND': (404, 'This resource could not be found'),
+    'DELETED_FROM_WP': (404, 'This resource has been deleted from http://www.usmgames.cl/'),
     'NOT_FOUND_ID': (404, 'A resource with this id could not be found'),
     'WORDPRESS_ERROR': (500, 'Could not access to http://www.usmgames.cl/')
 }
