@@ -4,7 +4,7 @@ from flask_restful import Resource, reqparse
 from usmgpm.services.wp_models.wp_user import WPUser
 from usmgpm.resources.utils import throw_error
 from usmgpm.models.requirement import ChallengeRequirement
-from usmgpm.services.exceptions import ServiceError, ForbiddenError
+from usmgpm.services.exceptions import ServiceError, ForbiddenError, AlreadyDeletedError, UnauthorizedError
 from usmgpm.models.db import db
 from usmgpm.services import WordPressService, WPChallenge, DiscordWebhookService
 from usmgpm.models.challenge import Challenge, ChallengeType
@@ -75,8 +75,11 @@ class ChallengeInstance(Resource):
             if challenge.wp_id is None:
                 return throw_error('NO_ASSOCIATED_ACHIEV')
             service: WordPressService = g.wordpress
-            wp_challenge = service.get_challenge(challenge.wp_id, challenge.type)
-            data['wp'] = wp_challenge.json
+            try:
+                wp_challenge = service.get_challenge(challenge.wp_id, challenge.type)
+                data['wp'] = wp_challenge.json
+            except UnauthorizedError:
+                return throw_error('DELETED_FROM_WP')
         return jsonify(data)
 
     def delete(self, id: int):
@@ -92,7 +95,10 @@ class ChallengeInstance(Resource):
             return throw_error('NOT_FOUND_ID')
 
         service: WordPressService = g.wordpress
-        service.delete_challenge(challenge.wp_id, challenge.type)
+        try:
+            service.delete_challenge(challenge.wp_id, challenge.type)
+        except AlreadyDeletedError:
+            pass
 
         db.session.delete(challenge)
         db.session.commit()
