@@ -26,6 +26,9 @@ class Challenge(db.Model):
     requirements = db.relationship('ChallengeRequirement',
                                    backref=db.backref('challenge', lazy=False),
                                    cascade="all,delete")
+    submissions = db.relationship('Submission',
+                                  backref=db.backref('challenge', lazy=True),
+                                  cascade="all,delete")
 
     published = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
