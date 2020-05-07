@@ -3,8 +3,7 @@ import os
 
 import pytest
 
-from flask import g
-
+from usmgpm.models.requirement import ChallengeRequirement
 from usmgpm.services import WordPressService
 from usmgpm.app import init_app
 
@@ -59,11 +58,21 @@ class TestChallenges:
         assert res.status_code == 403
 
         service.login(admin_username, admin_password)
+        ids = list()
         for cat in ChallengeType:
             res = publish_challenge(str(cat), service.token)
             assert res.status_code == 200
+            ids.append(json.loads(res.data)['id'])
 
         challenges = json.loads(self.client.get('/api/challenges').data)
         assert len(challenges) == len(ChallengeType)
         for c in challenges:
             assert len(c['requirements']) == 3
+
+        for _id in ids:
+            res = self.client.delete(f"/api/challenges/{_id}", headers={'Authorization': f'Bearer {service.token}'})
+            assert res.status_code == 200
+
+        challenges = json.loads(self.client.get('/api/challenges').data)
+        assert len(challenges) == 0
+        assert len(ChallengeRequirement.query.all()) == 0

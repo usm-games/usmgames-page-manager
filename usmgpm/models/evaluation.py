@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy import UniqueConstraint
 
 from usmgpm.models.db import db
@@ -15,9 +17,11 @@ class Submission(db.Model):
     evaluation_note = db.Column(db.Text, nullable=True, default=None)
     approved = db.Column(db.Boolean, nullable=True, default=None)
 
-    challenge = db.relationship('Challenge', backref=db.backref('challenges', lazy=False))
     user_id = db.Column(db.Integer, nullable=False)
     challenge_id = db.Column(db.Integer, db.ForeignKey(Challenge.id), nullable=False)
+    challenge = db.relationship('Challenge', backref=db.backref('submissions', lazy=False))
+
+    submitted = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def _parse_content(self):
         splitted = self.content.split(';')
@@ -37,7 +41,6 @@ class Submission(db.Model):
             'evidence': parsed_evidence
         }
 
-
     @property
     def json(self):
         evaluation = {
@@ -49,5 +52,6 @@ class Submission(db.Model):
             'user_id': self.user_id,
             'challenge_id': self.challenge_id,
             'submission': self._parse_content(),
-            'evaluation': evaluation
+            'evaluation': evaluation,
+            'submitted': self.submitted
         }
