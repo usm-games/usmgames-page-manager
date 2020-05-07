@@ -25,12 +25,8 @@ getter_parser.add_argument('fetch', action='store_true')
 
 class ChallengeList(Resource):
     def get(self):
-        try:
-            challenges = Challenge.query.all()
-            return jsonify(list(map(lambda x: x.json, challenges)))
-        except Exception as e:
-            print(type(e), e)
-            raise e
+        challenges = Challenge.query.order_by(Challenge.published.desc()).all()
+        return jsonify(list(map(lambda x: x.json, challenges)))
 
     def post(self):
         args = challenge_parser.parse_args()
@@ -95,13 +91,9 @@ class ChallengeInstance(Resource):
         if challenge is None:
             return throw_error('NOT_FOUND_ID')
 
-        try:
-            service: WordPressService = g.wordpress
-            service.delete_challenge(challenge.wp_id, challenge.type)
+        service: WordPressService = g.wordpress
+        service.delete_challenge(challenge.wp_id, challenge.type)
 
-            db.session.delete(challenge)
-            db.session.commit()
-        except Exception as e:
-            print(e)
-            raise e
+        db.session.delete(challenge)
+        db.session.commit()
         return jsonify({'message': 'Deleted challenge from https://www.usmgames.cl/ and from server'})
