@@ -28,3 +28,7 @@ class ForbiddenError(ServiceError):
 
 class UnauthorizedError(ServiceError):
     pass
+
+
+class AlreadyDeletedError(ServiceError):
+    pass

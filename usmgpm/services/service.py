@@ -67,6 +67,8 @@ class Service(ABC):
             raise ForbiddenError(res)
         elif res.status_code == 404:
             raise NotFoundError(res)
+        elif res.status_code == 410:
+            raise AlreadyDeletedError(res)
         elif res.status_code >= 400:
             raise ServiceError()
         decoded = res.content.decode()
