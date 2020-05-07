@@ -19,7 +19,6 @@ class Submission(db.Model):
 
     user_id = db.Column(db.Integer, nullable=False)
     challenge_id = db.Column(db.Integer, db.ForeignKey(Challenge.id), nullable=False)
-    challenge = db.relationship('Challenge', backref=db.backref('submissions', lazy=False))
 
     submitted = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
