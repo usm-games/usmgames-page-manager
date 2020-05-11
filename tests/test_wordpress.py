@@ -50,6 +50,8 @@ def test_retrieve_challenges():
     service.get_challenges(ChallengeType.PROGRAMMING)
     service.get_challenges(ChallengeType.ART)
     service.get_challenges(ChallengeType.MUSIC)
+    service.get_challenges(ChallengeType.GAMEDEV)
+    service.get_challenges(ChallengeType.MODELING)
 
 
 def test_publish_challenge():

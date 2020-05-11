@@ -5,9 +5,11 @@ from usmgpm.models.db import db
 
 
 class ChallengeType(Enum):
-    PROGRAMMING = 'programming'  # GAMEDEV
-    ART = 'art'  # ARTE
-    MUSIC = 'music'  # COMPOSITION
+    PROGRAMMING = 'programming'
+    ART = 'art2d'
+    MUSIC = 'music'
+    GAMEDEV = 'gamedev'
+    MODELING = 'art3d'
 
     def __str__(self):
         return self.value
