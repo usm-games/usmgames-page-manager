@@ -4,7 +4,7 @@ from flask import request
 from flask import Blueprint, g, current_app
 from flask_restful import Api
 
-from usmgpm.resources.auth import Me
+from usmgpm.resources.auth import Me, Users
 from usmgpm.resources.utils import throw_error
 from usmgpm.services.exceptions import ForbiddenError
 from usmgpm.services import WordPressService
@@ -47,5 +47,6 @@ def init_api():
     api.add_resource(UserSubmissionList, '/users/<u_id>/submissions')
     api.add_resource(Login, '/auth/login')
     api.add_resource(Me, '/auth/me')
+    api.add_resource(Users, '/users')
 
     current_app.register_blueprint(bp, url_prefix='/api')

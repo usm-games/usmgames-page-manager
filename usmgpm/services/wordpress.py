@@ -69,6 +69,13 @@ class WordPressService(Service):
         endpoint = f"wp/v2/users/me"
         return WPUser.from_json(self.get(endpoint, {'context': 'edit'}))
 
+    def get_users(self, context=None):
+        endpoint = f"wp/v2/users"
+        params = {}
+        if context is not None:
+            params['context'] = context
+        return list(map(WPUser.from_json, self.get(endpoint, params)))
+
     def get_challenges(self, c_type: ChallengeType):
         slug = self.to_challenge_slug(c_type)
         endpoint = f"wp/v2/{slug}"

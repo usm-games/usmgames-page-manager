@@ -26,3 +26,16 @@ class Me(Resource):
             return throw_error('NEEDS_LOGIN')
         user: WPUser = g.user
         return jsonify(user.json)
+
+
+class Users(Resource):
+    def get(self):
+        service: WordPressService = g.wordpress
+        if not service.is_logged_in:
+            return throw_error('NEEDS_LOGIN')
+        user: WPUser = g.user
+        if user.is_admin:
+            users = service.get_users(context='edit')
+        else:
+            users = service.get_users()
+        return jsonify(list(map(lambda x: x.json, users)))
