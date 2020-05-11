@@ -34,6 +34,10 @@ class WordPressService(Service):
             return 'chllng_music'
         if c_type == ChallengeType.PROGRAMMING:
             return 'chllng_programming'
+        if c_type == ChallengeType.MODELING:
+            return 'chllng_modeling'
+        if c_type == ChallengeType.GAMEDEV:
+            return 'chllng_gamedev'
         raise ValueError('The given type is not valid')
 
     def login(self, username, password):
