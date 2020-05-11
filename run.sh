@@ -1,2 +1,2 @@
 flask db upgrade
-gunicorn -w 4 "usmgpm.app:init_app()"
+gunicorn -w 8 "usmgpm.app:init_app()"
