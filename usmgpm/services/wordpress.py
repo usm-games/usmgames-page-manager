@@ -69,14 +69,18 @@ class WordPressService(Service):
         endpoint = f"wp/v2/users/me"
         return WPUser.from_json(self.get(endpoint, {'context': 'edit'}))
 
-    def create_user(self, user: WPUser, password: str):
+    def create_user(self, user: WPUser, password: str, is_admin: bool = False):
         endpoint = f"wp/v2/users"
         data = {
             'email': user.email,
             'username': user.username,
             'display_name': user.display_name,
-            'password': password
+            'password': password,
         }
+        if is_admin:
+            data['roles'] = ['administrator']
+        else:
+            data['roles'] = ['subscriber']
         return WPUser.from_json(self.post(endpoint, data))
 
     def get_users(self, context=None):

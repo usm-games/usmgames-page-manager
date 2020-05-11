@@ -65,5 +65,5 @@ class Users(Resource):
             return throw_error('PERMISSION_NEEDED')
         args = register_parser.parse_args()
         user_data = WPUser(args['email'], args['username'], args['display_name'])
-        new_user = service.create_user(user_data, generate_password())
+        new_user = service.create_user(user_data, generate_password(), is_admin=args['admin'])
         return jsonify(new_user.json)
