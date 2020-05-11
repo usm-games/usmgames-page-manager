@@ -25,6 +25,10 @@ class WPUser:
             return ChallengeType.PROGRAMMING
         if c_type_slug == 'chllng_music':
             return ChallengeType.MUSIC
+        if c_type_slug == 'chllng_modeling':
+            return ChallengeType.MODELING
+        if c_type_slug == 'chllng_gamedev':
+            return ChallengeType.GAMEDEV
         raise ValueError('Unknown Challenge Type slug')
 
     @staticmethod

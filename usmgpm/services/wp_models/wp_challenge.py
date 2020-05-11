@@ -22,6 +22,10 @@ class WPChallenge:
             return ChallengeType.PROGRAMMING
         if c_type_slug == 'chllng_music':
             return ChallengeType.MUSIC
+        if c_type_slug == 'chllng_modeling':
+            return ChallengeType.MODELING
+        if c_type_slug == 'chllng_gamedev':
+            return ChallengeType.GAMEDEV
         raise ValueError('Unknown Challenge Type slug')
 
     @staticmethod
@@ -67,9 +71,13 @@ class WPChallenge:
         if self.type == ChallengeType.PROGRAMMING:
             return 'programación'
         if self.type == ChallengeType.ART:
-            return 'arte'
+            return 'arte 2D'
         if self.type == ChallengeType.MUSIC:
             return 'música'
+        if self.type == ChallengeType.GAMEDEV:
+            return 'game dev'
+        if self.type == ChallengeType.MODELING:
+            return 'arte 3D'
         raise ValueError('Unexpected challenge type')
 
     @property
@@ -80,4 +88,8 @@ class WPChallenge:
             return '🖌'
         if self.type == ChallengeType.MUSIC:
             return '🎶'
+        if self.type == ChallengeType.GAMEDEV:
+            return '🎮'
+        if self.type == ChallengeType.MODELING:
+            return '🎲'
         raise ValueError('Unexpected challenge type')
