@@ -10,6 +10,7 @@ from usmgpm.services.wordpress import WordPressService
 
 login_parser = reqparse.RequestParser()
 login_parser.add_argument('username', type=str, required=True)
+login_parser.add_argument('password', type=str, required=True)
 
 register_parser = reqparse.RequestParser()
 register_parser.add_argument('email', type=str, required=True)
