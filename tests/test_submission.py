@@ -1,4 +1,3 @@
-import json
 import os
 
 import pytest
@@ -15,7 +14,7 @@ admin_password = os.environ.get('TEST_ADMINPASS')
 
 @pytest.fixture()
 def app():
-    return init_app(create_all=True)
+    return init_app(create_all=True, testing=True)
 
 
 @pytest.mark.usefixtures('client_class')

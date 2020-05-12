@@ -14,7 +14,7 @@ admin_password = os.environ.get('TEST_ADMINPASS')
 
 @pytest.fixture()
 def app():
-    return init_app()
+    return init_app(testing=True)
 
 
 def test_login():

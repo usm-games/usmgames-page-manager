@@ -4,6 +4,7 @@ from flask import request
 from flask import Blueprint, g, current_app
 from flask_restful import Api
 
+from usmgpm.services.email import EmailService
 from usmgpm.resources.auth import Me, Users
 from usmgpm.resources.utils import throw_error
 from usmgpm.services.exceptions import ForbiddenError
@@ -25,6 +26,7 @@ def append_wp_service(f):
             except ForbiddenError:
                 return throw_error('INVALID_TOKEN')
         g.wordpress = service
+        g.mail = EmailService()
         return f(*args, **kwargs)
     return decorated_function
 
