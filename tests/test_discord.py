@@ -7,7 +7,7 @@ from usmgpm.app import init_app
 
 @pytest.fixture()
 def app():
-    return init_app()
+    return init_app(testing=True)
 
 
 def test_post_on_discord():
