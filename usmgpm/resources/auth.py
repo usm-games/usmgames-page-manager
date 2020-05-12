@@ -1,9 +1,13 @@
+from typing import List
+
+import unidecode
 import secrets
 import string
 
 from flask import jsonify, g
 from flask_restful import Resource, reqparse
 
+from usmgpm.services.email import EmailService
 from usmgpm.resources.utils import throw_error
 from usmgpm.services.wp_models.wp_user import WPUser
 from usmgpm.services.wordpress import WordPressService
@@ -14,10 +18,22 @@ login_parser.add_argument('password', type=str, required=True)
 
 register_parser = reqparse.RequestParser()
 register_parser.add_argument('email', type=str, required=True)
-register_parser.add_argument('username', type=str, required=True)
-register_parser.add_argument('password', type=str, required=True)
 register_parser.add_argument('display_name', type=str, required=False)
 register_parser.add_argument('admin', type=bool, default=False)
+
+
+def generate_username(real_name: str, used_usernames: List[str]):
+    username = unidecode.unidecode(real_name)
+    username = '.'.join(username.split()).lower()
+
+    alphabet = string.ascii_letters + string.digits + '.'
+    username = ''.join([c for c in username if c in alphabet])
+    count = 0
+    suffix = ''
+    while username + suffix in used_usernames:
+        count += 1
+        suffix = '' if count == 0 else '.' + str(count)
+    return username + suffix
 
 
 def generate_password(length: int = 20):
@@ -64,6 +80,19 @@ class Users(Resource):
         if not user.is_admin:
             return throw_error('PERMISSION_NEEDED')
         args = register_parser.parse_args()
-        user_data = WPUser(args['email'], args['username'], args['display_name'])
-        new_user = service.create_user(user_data, generate_password(), is_admin=args['admin'])
+
+        email = args['email']
+        display_name = args['display_name']
+        is_admin = args['admin']
+        username = generate_username(display_name, [user.username for user in service.get_users()])
+        password = generate_password()
+
+        user_data = WPUser(email, username, display_name)
+        new_user = service.create_user(user_data, password, is_admin=is_admin)
+        mail: EmailService = g.mail
+        if mail.is_valid:
+            with open('assets/email.html', 'r') as f:
+                content = ''.join(f.readlines()) % (user_data.display_name, user_data.username, password)
+            mail.send(email, '[USM Games] Bienvenido a usmgames.cl!', content)
+
         return jsonify(new_user.json)
