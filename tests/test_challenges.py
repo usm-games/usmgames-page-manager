@@ -23,7 +23,9 @@ def app():
 @pytest.mark.usefixtures('client_class')
 class TestChallenges:
     def test_empty_db(self):
-        rv = self.client.get('/api/challenges')
+        service = WordPressService()
+        service.login(username, password)
+        rv = self.client.get('/api/challenges', headers={'Authorization': f'Bearer {service.token}'})
 
         assert rv.status_code == 200
         assert len(json.loads(rv.data)) == 0
@@ -64,15 +66,20 @@ class TestChallenges:
             assert res.status_code == 200
             ids.append(json.loads(res.data)['id'])
 
-        challenges = json.loads(self.client.get('/api/challenges').data)
+        res = self.client.get('/api/challenges', headers={'Authorization': f'Bearer {service.token}'})
+        assert res.status_code == 200
+        challenges = json.loads(res.data)
         assert len(challenges) == len(ChallengeType)
         for c in challenges:
+            print(c)
             assert len(c['requirements']) == 3
 
         for _id in ids:
             res = self.client.delete(f"/api/challenges/{_id}", headers={'Authorization': f'Bearer {service.token}'})
             assert res.status_code == 200
 
-        challenges = json.loads(self.client.get('/api/challenges').data)
+        res = self.client.get('/api/challenges', headers={'Authorization': f'Bearer {service.token}'})
+        assert res.status_code == 200
+        challenges = json.loads(res.data)
         assert len(challenges) == 0
         assert len(ChallengeRequirement.query.all()) == 0
