@@ -91,7 +91,7 @@ class Users(Resource):
         new_user = service.create_user(user_data, password, is_admin=is_admin)
         mail: EmailService = g.mail
         if mail.is_valid:
-            with open('assets/email.html', 'r') as f:
+            with open('../services/assets/email.html', 'r') as f:
                 content = ''.join(f.readlines()) % (user_data.display_name, user_data.username, password)
             mail.send(email, '[USM Games] Bienvenido a usmgames.cl!', content)
 
