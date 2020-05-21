@@ -1,3 +1,4 @@
+from sqlalchemy import or_
 from flask import jsonify, g
 from flask_restful import Resource, reqparse
 
@@ -29,12 +30,14 @@ class ChallengeList(Resource):
         if not g.wordpress.is_logged_in:
             return throw_error('NEEDS_LOGIN')
         user: WPUser = g.user
-        results = Challenge.query\
-            .outerjoin(Submission, user.id == Submission.user_id)\
+        print(user)
+        q = Challenge.query\
+            .outerjoin(Submission, Submission.challenge_id == Challenge.id)\
+            .filter(or_(Submission.user_id == user.id, Submission.id.is_(None)))\
             .add_columns(Submission.id)\
-            .order_by(Challenge.published.desc())\
-            .all()
-        data = list(map(lambda x: {**x.Challenge.json, 'your_submission_id': x.id}, results))
+            .order_by(Challenge.published.desc())
+        results = q.all()
+        data = list(map(lambda x: {**x.Challenge.json, 'submitted_to': x.id is not None}, results))
         return jsonify(data)
 
     def post(self):

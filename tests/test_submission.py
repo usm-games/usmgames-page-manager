@@ -56,14 +56,25 @@ class TestSubmissions:
         headers = None
         if service.token:
             headers = {'Authorization': f'Bearer {service.token}'}
-        res = self.client.post(f'/api/challenges/{challenge_id}/submissions', json=submission, headers=headers)
 
+        # Submit A
         user = service.me()
+        res = self.client.post(f'/api/challenges/{challenge_id}/submissions', json=submission, headers=headers)
         assert res.status_code == 200
         submission_ = res.json
         assert submission_['user_id'] == user.id
         assert submission_['challenge_id'] == challenge_id
 
+        # Check if challenge is created and has a submission associated
+        res = self.client.get(f'/api/challenges', headers=headers)
+        assert res.status_code == 200
+        assert len(res.json) == 2
+        challenge = res.json[1]
+        assert challenge['submitted_to']
+        challenge = res.json[0]
+        assert not challenge['submitted_to']
+
+        # Submit B
         res = self.client.post(f'/api/challenges/{challenge_id_b}/submissions', json=submission, headers=headers)
         assert res.status_code == 200
         submission_ = res.json
