@@ -27,10 +27,12 @@ getter_parser.add_argument('fetch', action='store_true')
 
 class ChallengeList(Resource):
     def get(self):
+        """
+        GET all challenges with a field to recognize if the logged in user has made a submission to it.
+        """
         if not g.wordpress.is_logged_in:
             return throw_error('NEEDS_LOGIN')
         user: WPUser = g.user
-        print(user)
         q = Challenge.query\
             .outerjoin(Submission, Submission.challenge_id == Challenge.id)\
             .filter(or_(Submission.user_id == user.id, Submission.id.is_(None)))\
@@ -41,6 +43,9 @@ class ChallengeList(Resource):
         return jsonify(data)
 
     def post(self):
+        """
+        POST Create a challenge
+        """
         args = challenge_parser.parse_args()
         instance = Challenge(
             type=args['type'],
@@ -77,6 +82,9 @@ class ChallengeList(Resource):
 
 class ChallengeInstance(Resource):
     def get(self, id: int):
+        """
+        GET Get a challenge instance
+        """
         challenge = Challenge.query.filter_by(id=id).first()
         if challenge is None:
             return throw_error('NOT_FOUND_ID')
@@ -95,6 +103,9 @@ class ChallengeInstance(Resource):
         return jsonify(data)
 
     def delete(self, id: int):
+        """
+        DELETE challenge from database and Wordpress
+        """
         if not g.wordpress.is_logged_in:
             return throw_error('NEEDS_LOGIN')
 
