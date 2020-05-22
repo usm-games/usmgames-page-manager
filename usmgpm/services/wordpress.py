@@ -110,13 +110,15 @@ class WordPressService(Service):
         endpoint = f"wp/v2/{slug}"
         return self.get(endpoint)
 
-    def award_user(self, user_id: int, challenge: WPChallenge):
+    def award_user(self, user_id: int, challenge: WPChallenge, points: int):
         slug = 'gamipress-user-earnings'
         endpoint = f"wp/v2/{slug}"
         return self.post(endpoint, {
             'user_id': user_id,
             'post_id': challenge.id,
-            'post_type': self.to_challenge_slug(challenge.type)
+            'post_type': self.to_challenge_slug(challenge.type),
+            'points': points,
+            'points_type': 'prestigio'
         })
 
     def publish_challenge(self, challenge: WPChallenge, status: str = 'publish'):

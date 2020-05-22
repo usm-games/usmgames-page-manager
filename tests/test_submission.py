@@ -84,7 +84,8 @@ class TestSubmissions:
         # Evaluate without being an administrator
         evaluation = {
             'comment': 'Good job dude',
-            'approved': True
+            'approved': True,
+            'points': 10
         }
         res = self.client.post(f'/api/challenges/{challenge_id}/submissions/{user.id}/evaluate',
                                json=evaluation, headers=headers)
@@ -93,7 +94,8 @@ class TestSubmissions:
         # Evaluate without being logged in
         evaluation = {
             'comment': 'Good job dude',
-            'approved': True
+            'approved': True,
+            'points': 10
         }
         res = self.client.post(f'/api/challenges/{challenge_id}/submissions/{user.id}/evaluate',
                                json=evaluation)
@@ -108,7 +110,8 @@ class TestSubmissions:
         # Evaluate on approval of submission
         evaluation = {
             'comment': 'Good job dude',
-            'approved': True
+            'approved': True,
+            'points': 10
         }
         res = self.client.post(f'/api/challenges/{challenge_id}/submissions/{user.id}/evaluate',
                                json=evaluation, headers=headers)
@@ -117,7 +120,8 @@ class TestSubmissions:
         # Evaluate an already evaluated submission
         evaluation = {
             'comment': 'Sorry, you missed the second requirement :(',
-            'approved': False
+            'approved': False,
+            'points': 10
         }
         res = self.client.post(f'/api/challenges/{challenge_id}/submissions/{user.id}/evaluate',
                                json=evaluation, headers=headers)
@@ -126,7 +130,8 @@ class TestSubmissions:
         # Evaluate on rejection of submission
         evaluation = {
             'comment': 'Sorry, you missed the second requirement :(',
-            'approved': False
+            'approved': False,
+            'points': 10
         }
         res = self.client.post(f'/api/challenges/{challenge_id_b}/submissions/{user.id}/evaluate',
                                json=evaluation, headers=headers)
