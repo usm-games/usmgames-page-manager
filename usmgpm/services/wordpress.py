@@ -74,7 +74,7 @@ class WordPressService(Service):
         data = {
             'email': user.email,
             'username': user.username,
-            'display_name': user.display_name,
+            'name': user.display_name,
             'password': password,
         }
         if is_admin:
