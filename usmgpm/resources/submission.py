@@ -3,6 +3,7 @@ import validators
 from flask import jsonify, g
 from flask_restful import Resource, reqparse
 
+from usmgpm.models.challenge import Challenge
 from usmgpm.services.wp_models.wp_user import WPUser
 from usmgpm.services import WordPressService
 
@@ -13,6 +14,7 @@ from usmgpm.resources.utils import throw_error
 evaluation_parser = reqparse.RequestParser()
 evaluation_parser.add_argument('comment', type=str, required=True)
 evaluation_parser.add_argument('approved', type=bool, required=True)
+evaluation_parser.add_argument('points', type=int, required=True)
 
 submission_parser = reqparse.RequestParser()
 submission_parser.add_argument('comment', type=str, required=True)
@@ -146,7 +148,8 @@ class Evaluation(Resource):
         return jsonify(sub.json)
 
     def put(self, c_id: int, u_id: int):
-        if g.wordpress.is_logged_in:
+        service: WordPressService = g.wordpress
+        if service.is_logged_in:
             return throw_error('NEEDS_LOGIN')
 
         user: WPUser = g.user
@@ -159,9 +162,14 @@ class Evaluation(Resource):
             first()
         if sub.approved is None:
             return throw_error('NOT_EVALUATED')
-
+        if not sub.approved:
+            return throw_error('ALREADY_EVALUATED', 'You can\'t update an approved submission evaluation')
         args = evaluation_parser.parse_args()
         comment, approved = args['comment'], args['approved']
+
+        challenge: Challenge = Challenge.query.filter(Challenge.id == c_id)
+        c = service.get_challenge(challenge.wp_id, challenge.type)
+        service.award_user(u_id, c, args['points'])
 
         sub.evaluation_note = comment
         sub.approved = approved

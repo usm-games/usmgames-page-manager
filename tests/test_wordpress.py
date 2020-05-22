@@ -75,7 +75,7 @@ def test_publish_challenge():
     c = service.publish_challenge(challenge, 'private')
 
     me = service.me()
-    service.award_user(me.id, c)
+    service.award_user(me.id, c, 10)
 
 
 def test_retrieve_earnings():
