@@ -84,3 +84,10 @@ def test_retrieve_earnings():
     service = WordPressService()
     service.login(admin_username, admin_password)
     service.get_earnings()
+
+
+def test_retrieve_users():
+    from usmgpm.services.wordpress import WordPressService
+    service = WordPressService()
+    service.login(admin_username, admin_password)
+    service.get_users(context='edit')

@@ -35,7 +35,7 @@ class WPUser:
     def from_json(data: dict):
         return WPUser(
             email=data.get('email'),
-            username=data.get('slug'),
+            username=data.get('username'),
             display_name=data.get('name'),
             u_id=data.get('id'),
             roles=data.get('roles')
