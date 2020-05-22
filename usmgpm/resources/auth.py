@@ -84,7 +84,11 @@ class Users(Resource):
         email = args['email']
         display_name = args['display_name']
         is_admin = args['admin']
-        username = generate_username(display_name, [user.username for user in service.get_users(context='edit')])
+
+        users = service.get_users(context='edit')
+        if email in [user.email for user in users]:
+            return throw_error('EMAIL_IN_USE')
+        username = generate_username(display_name, [user.username for user in users])
         password = generate_password()
 
         user_data = WPUser(email, username, display_name)

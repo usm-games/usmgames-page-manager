@@ -6,6 +6,7 @@ errors = {
     'NOT_EVALUATED': (400, 'This submission has not been evaluated yet'),
     'INVALID_URL': (400, 'Data has an invalid URL'),
     'MISSING_FIELDS': (400, 'The given data is missing some fields'),
+    'EMAIL_IN_USE': (400, 'The given e-mail is in use'),
     'NO_ASSOCIATED_ACHIEV': (400, 'This challenge does not have an associated achievement on http://www.usmgames.cl/'),
     'INVALID_HEADER': (400, 'Invalid header'),
     'NEEDS_LOGIN': (401, 'You must be logged in'),
