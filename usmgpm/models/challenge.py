@@ -44,3 +44,31 @@ class Challenge(db.Model):
             'requirements': list(map(lambda x: x.json, self.requirements)),
             'published': self.published
         }
+
+    @property
+    def discord_emoji(self):
+        if self.type == ChallengeType.PROGRAMMING:
+            return '<:Coding:710608701085581452>'
+        if self.type == ChallengeType.ART:
+            return '<:Design:710608759688527944>'
+        if self.type == ChallengeType.MUSIC:
+            return '<:Music:710608627714490520>'
+        if self.type == ChallengeType.GAMEDEV:
+            return '<:Joystick:700829111513514044>'
+        if self.type == ChallengeType.MODELING:
+            return '<:3D:710608668500033536>'
+        raise ValueError('Unexpected challenge type')
+
+    @property
+    def spanish_type(self):
+        if self.type == ChallengeType.PROGRAMMING:
+            return 'programación'
+        if self.type == ChallengeType.ART:
+            return 'arte 2D'
+        if self.type == ChallengeType.MUSIC:
+            return 'música'
+        if self.type == ChallengeType.GAMEDEV:
+            return 'game dev'
+        if self.type == ChallengeType.MODELING:
+            return 'arte 3D'
+        raise ValueError('Unexpected challenge type')

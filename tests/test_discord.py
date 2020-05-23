@@ -20,15 +20,18 @@ def test_post_on_discord():
     time.sleep(1)
 
 
-def test_post_challenge():
-    from usmgpm.models.challenge import ChallengeType
+def test_post_challenge(app):
+    from usmgpm.models.challenge import ChallengeType, Challenge
+    from usmgpm.models.requirement import ChallengeRequirement
     from usmgpm.services.discord import DiscordWebhookService
-    from usmgpm.services import WPChallenge
 
     service = DiscordWebhookService()
 
     for t in ChallengeType:
-        challenge = WPChallenge(f'This is a test {str(t)} challenge', t,
-                                f'This challenge consists on doing {str(t)} stuff.')
+        challenge = Challenge(title=f'This is a test {str(t)} challenge',
+                              description=f'This challenge consists on doing {str(t)} stuff.',
+                              type=t)
+        challenge.requirements.append(ChallengeRequirement(description='Requirement A'))
+        challenge.requirements.append(ChallengeRequirement(description='Requirement B'))
         service.post_challenge(challenge)
         time.sleep(1)
