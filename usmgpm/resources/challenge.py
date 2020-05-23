@@ -1,4 +1,3 @@
-from sqlalchemy import or_
 from flask import jsonify, g
 from flask_restful import Resource, reqparse
 
@@ -6,7 +5,7 @@ from usmgpm.models.evaluation import Submission
 from usmgpm.services.wp_models.wp_user import WPUser
 from usmgpm.resources.utils import throw_error
 from usmgpm.models.requirement import ChallengeRequirement
-from usmgpm.services.exceptions import ServiceError, ForbiddenError, AlreadyDeletedError, UnauthorizedError
+from usmgpm.services.exceptions import ServiceError, ForbiddenError, UnauthorizedError, NotFoundError
 from usmgpm.models.db import db
 from usmgpm.services import WordPressService, WPChallenge, DiscordWebhookService
 from usmgpm.models.challenge import Challenge, ChallengeType
@@ -122,7 +121,7 @@ class ChallengeInstance(Resource):
         service: WordPressService = g.wordpress
         try:
             service.delete_challenge(challenge.wp_id, challenge.type)
-        except AlreadyDeletedError:
+        except NotFoundError:
             pass
 
         db.session.delete(challenge)
