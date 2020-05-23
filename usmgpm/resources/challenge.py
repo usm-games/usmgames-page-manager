@@ -33,13 +33,15 @@ class ChallengeList(Resource):
         if not g.wordpress.is_logged_in:
             return throw_error('NEEDS_LOGIN')
         user: WPUser = g.user
-        q = Challenge.query\
-            .outerjoin(Submission, Submission.challenge_id == Challenge.id)\
-            .filter(or_(Submission.user_id == user.id, Submission.id.is_(None)))\
-            .add_columns(Submission.id)\
+        q = Challenge.query \
+            .add_columns(Submission.query
+                         .filter_by(user_id=user.id)
+                         .filter_by(challenge_id=Challenge.id)
+                         .exists()
+                         ) \
             .order_by(Challenge.published.desc())
         results = q.all()
-        data = list(map(lambda x: {**x.Challenge.json, 'submitted_to': x.id is not None}, results))
+        data = list(map(lambda x: {**x.Challenge.json, 'submitted_to': x[1]}, results))
         return jsonify(data)
 
     def post(self):
