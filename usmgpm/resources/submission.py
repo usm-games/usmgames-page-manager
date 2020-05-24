@@ -1,4 +1,4 @@
-import validators
+import re
 
 from flask import jsonify, g
 from flask_restful import Resource, reqparse
@@ -22,6 +22,8 @@ submission_parser.add_argument('evidence', type=dict, required=True, action='app
 
 get_submission_parser = reqparse.RequestParser()
 get_submission_parser.add_argument('not_evaluated', type=bool, required=False, default=False)
+
+url_regex = re.compile('(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?')
 
 
 class ChallengeSubmissionList(Resource):
@@ -60,7 +62,7 @@ class ChallengeSubmissionList(Resource):
             evidence: dict = evidence
             description: str = evidence.get('description').replace(';', '')
             url: str = evidence.get('url').replace(';', '')
-            if not validators.url(url):
+            if url_regex.match(url) is None:
                 return throw_error('INVALID_URL', f'An evidence has an invalid url: {url}')
             if url and description:
                 url = url.replace(';', '')

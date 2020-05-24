@@ -27,7 +27,7 @@ class Submission(db.Model):
         comment = splitted[0]
         evidence = splitted[1:]
         if len(evidence) % 2 != 0:
-            raise ValueError("The contet is invalid")
+            raise ValueError("The content is invalid")
         n_evidence = len(evidence) // 2
         parsed_evidence = []
         for i_evidence in range(n_evidence):
