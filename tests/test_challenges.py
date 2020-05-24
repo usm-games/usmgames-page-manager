@@ -71,7 +71,6 @@ class TestChallenges:
         challenges = json.loads(res.data)
         assert len(challenges) == len(ChallengeType)
         for c in challenges:
-            print(c)
             assert len(c['requirements']) == 3
 
         for _id in ids:

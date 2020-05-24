@@ -140,6 +140,10 @@ class Evaluation(Resource):
 
         args = evaluation_parser.parse_args()
         comment, approved = args['comment'], args['approved']
+        challenge: Challenge = Challenge.query.filter(Challenge.id == c_id).first()
+        c = service.get_challenge(challenge.wp_id, challenge.type)
+        if approved:
+            service.award_user(u_id, c, args['points'])
 
         sub.evaluation_note = comment
         sub.approved = approved
@@ -167,9 +171,10 @@ class Evaluation(Resource):
         args = evaluation_parser.parse_args()
         comment, approved = args['comment'], args['approved']
 
-        challenge: Challenge = Challenge.query.filter(Challenge.id == c_id)
+        challenge: Challenge = Challenge.query.filter(Challenge.id == c_id).first()
         c = service.get_challenge(challenge.wp_id, challenge.type)
-        service.award_user(u_id, c, args['points'])
+        if approved:
+            service.award_user(u_id, c, args['points'])
 
         sub.evaluation_note = comment
         sub.approved = approved

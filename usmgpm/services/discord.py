@@ -1,7 +1,7 @@
 import os
 
+from usmgpm.models.challenge import Challenge
 from usmgpm.services.service import Service
-from usmgpm.services.wp_models import WPChallenge
 
 
 class DiscordWebhookService(Service):
@@ -19,7 +19,7 @@ class DiscordWebhookService(Service):
 
     @staticmethod
     def generate_embed(title: str, description: str, title_url: str = None, footer_text: str = None,
-                       hex_color: str = None):
+                       hex_color: int = None):
         embed = {
             'title': title,
             'description': description
@@ -30,6 +30,9 @@ class DiscordWebhookService(Service):
             embed['footer'] = {'text': footer_text}
         if title_url:
             embed['url'] = title_url
+        embed['thumbnail'] = {
+            "url": "http://www.usmgames.cl/wp-content/uploads/2020/03/Logotipo3@0.25x-150x150.png"
+        }
         return embed
 
     def post_message(self, message: str):
@@ -37,12 +40,20 @@ class DiscordWebhookService(Service):
 
     def post_embed(self, title: str, description: str, message: str = None):
         payload = {
-            'embeds': [DiscordWebhookService.generate_embed(title, description)]
+            'embeds': [DiscordWebhookService.generate_embed(title, description, hex_color=16724273)],
         }
         if message:
             payload['content'] = message
         return self.post(data=payload)
 
-    def post_challenge(self, challenge: WPChallenge):
-        message = f"{challenge.emoji*3} ¡Se ha publicado un nuevo desafío de {challenge.spanish_type}! {challenge.emoji*3}"
-        return self.post_embed(challenge.title, challenge.content, message)
+    def post_challenge(self, challenge: Challenge):
+        production = os.environ.get('FLASK_ENV') == 'production'
+
+        message = f"{challenge.discord_emoji*3} **¡ALERTA DE DESAFÍO DE {challenge.spanish_type.upper()}!** {challenge.discord_emoji*3}"
+        if production:
+            message = '<@&708244306246369352>\n' + message
+        content = f'{challenge.description}\n'
+        content += '**Requisitos:**\n'
+        for req in challenge.requirements:
+            content += f'* {req.description}\n'
+        return self.post_embed(challenge.title, content, message)
