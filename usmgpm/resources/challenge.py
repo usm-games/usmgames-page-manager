@@ -67,7 +67,7 @@ class ChallengeList(Resource):
             wp_c = service.publish_challenge(wp_challenge, status=args['status'])
             if args['notify']:
                 discord = DiscordWebhookService()
-                discord.post_challenge(wp_c)
+                discord.post_challenge(instance)
             instance.wp_id = wp_c.id
         except ForbiddenError:
             return throw_error('PERMISSION_NEEDED')
