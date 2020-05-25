@@ -9,13 +9,16 @@ class WPUser:
     username: str
     email: str
     roles: List[str]
+    meta: dict
 
-    def __init__(self, email: str, username: str, display_name: str = None, roles: List[str] = None, u_id: int = None):
+    def __init__(self, email: str, username: str, display_name: str = None, roles: List[str] = None,
+                 u_id: int = None, meta: dict = None):
         self.email = email
         self.username = username
         self.display_name = display_name
         self.id = u_id
         self.roles = roles
+        self.meta = meta
 
     @staticmethod
     def _serialize_challenge_type(c_type_slug: str):
@@ -33,12 +36,14 @@ class WPUser:
 
     @staticmethod
     def from_json(data: dict):
+        meta = data.get('meta')
         return WPUser(
             email=data.get('email'),
             username=data.get('username'),
             display_name=data.get('name'),
             u_id=data.get('id'),
-            roles=data.get('roles')
+            roles=data.get('roles'),
+            meta=meta
         )
 
     @property

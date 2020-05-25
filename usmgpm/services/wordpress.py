@@ -7,6 +7,7 @@ from usmgpm.services.wp_models import WPChallenge
 
 
 class WordPressService(Service):
+    saved_me: WPUser = None
 
     @property
     def url(self):
@@ -67,7 +68,8 @@ class WordPressService(Service):
 
     def me(self):
         endpoint = f"wp/v2/users/me"
-        return WPUser.from_json(self.get(endpoint, {'context': 'edit'}))
+        self.saved_me = WPUser.from_json(self.get(endpoint, {'context': 'edit'}))
+        return self.saved_me
 
     def create_user(self, user: WPUser, password: str, is_admin: bool = False):
         endpoint = f"wp/v2/users"
@@ -90,6 +92,13 @@ class WordPressService(Service):
             params['context'] = context
         return list(map(WPUser.from_json, self.get(endpoint, params)))
 
+    def get_user(self, user_id: int, context=None):
+        endpoint = f"wp/v2/users/{user_id}"
+        params = {}
+        if context is not None:
+            params['context'] = context
+        return WPUser.from_json(self.get(endpoint, params))
+
     def get_challenges(self, c_type: ChallengeType):
         slug = self.to_challenge_slug(c_type)
         endpoint = f"wp/v2/{slug}"
@@ -110,16 +119,25 @@ class WordPressService(Service):
         endpoint = f"wp/v2/{slug}"
         return self.get(endpoint)
 
+    def award_points(self, user_id: int, points: int):
+        endpoint = f"wp/v2/users/{user_id}"
+        user = self.get_user(user_id, context='edit')
+        past_points = user.meta.get('_gamipress_prestigio_points')
+        user.meta['_gamipress_prestigio_points'] = past_points + points
+        return self.patch(endpoint, {'meta': user.meta})
+
     def award_user(self, user_id: int, challenge: WPChallenge, points: int):
         slug = 'gamipress-user-earnings'
         endpoint = f"wp/v2/{slug}"
-        return self.post(endpoint, {
+        award = self.post(endpoint, {
             'user_id': user_id,
             'post_id': challenge.id,
             'post_type': self.to_challenge_slug(challenge.type),
             'points': points,
             'points_type': 'prestigio'
         })
+        self.award_points(user_id, points)
+        return award
 
     def publish_challenge(self, challenge: WPChallenge, status: str = 'publish'):
         slug = self.to_challenge_slug(challenge.type)

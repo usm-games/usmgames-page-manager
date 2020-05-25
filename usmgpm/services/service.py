@@ -116,7 +116,21 @@ class Service(ABC):
         :return: The returned JSON serialized as a dict
         :rtype: dict
         """
-        req = requests.post(os.path.join(self.url, path), json=data, headers=self.headers)
+        req = requests.put(os.path.join(self.url, path), json=data, headers=self.headers)
+        data = self._process_response(req)
+        return data
+
+    def patch(self, path: str, data: dict = None):
+        """
+        Make a PATCH request to the given path.
+        :param path: The path in the service where to make the request
+        :type path: str
+        :param data: Data to be sent in the request
+        :type data: dict
+        :return: The returned JSON serialized as a dict
+        :rtype: dict
+        """
+        req = requests.patch(os.path.join(self.url, path), json=data, headers=self.headers)
         data = self._process_response(req)
         return data
 
