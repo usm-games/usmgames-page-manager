@@ -40,13 +40,13 @@ def init_api():
     from usmgpm.resources.challenge import ChallengeInstance, ChallengeList
 
     api.add_resource(ChallengeList, '/challenges')
-    api.add_resource(ChallengeInstance, '/challenges/<id>')
+    api.add_resource(ChallengeInstance, '/challenges/<int:id>')
 
-    api.add_resource(ChallengeSubmissionList, '/challenges/<c_id>/submissions')
-    api.add_resource(ChallengeSubmission, '/challenges/<c_id>/submissions/<u_id>')
-    api.add_resource(Evaluation, '/challenges/<c_id>/submissions/<u_id>/evaluate')
+    api.add_resource(ChallengeSubmissionList, '/challenges/<int:c_id>/submissions')
+    api.add_resource(ChallengeSubmission, '/challenges/<int:c_id>/submissions/<int:u_id>')
+    api.add_resource(Evaluation, '/challenges/<int:c_id>/submissions/<int:u_id>/evaluate')
 
-    api.add_resource(UserSubmissionList, '/users/<u_id>/submissions')
+    api.add_resource(UserSubmissionList, '/users/<int:u_id>/submissions')
     api.add_resource(Login, '/auth/login')
     api.add_resource(Me, '/auth/me')
     api.add_resource(Users, '/users')
