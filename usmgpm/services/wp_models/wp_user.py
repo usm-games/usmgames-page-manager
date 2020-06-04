@@ -53,7 +53,8 @@ class WPUser:
             'username': self.username,
             'display_name': self.display_name,
             'id': self.id,
-            'roles': self.roles
+            'roles': self.roles,
+            'points': self.meta.get('_gamipress_prestigio_points') if self.meta is not None else None
         }
 
     @property
