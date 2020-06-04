@@ -48,15 +48,15 @@ class Challenge(db.Model):
     @property
     def discord_emoji(self):
         if self.type == ChallengeType.PROGRAMMING:
-            return '<:Coding:710608701085581452>'
+            return '<:Coding:715742757335072808>'
         if self.type == ChallengeType.ART:
-            return '<:Design:710608759688527944>'
+            return '<:Art:715743312597876881>'
         if self.type == ChallengeType.MUSIC:
-            return '<:Music:710608627714490520>'
+            return '<:Music:715742514115772437>'
         if self.type == ChallengeType.GAMEDEV:
-            return '<:Joystick:700829111513514044>'
+            return '<:Design:717218969336938592>'
         if self.type == ChallengeType.MODELING:
-            return '<:3D:710608668500033536>'
+            return '<:3D:715742845683630112>'
         raise ValueError('Unexpected challenge type')
 
     @property
