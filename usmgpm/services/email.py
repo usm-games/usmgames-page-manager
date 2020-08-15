@@ -2,7 +2,7 @@ import os
 from typing import List, Tuple
 
 from flask import current_app
-from flask_mail import Mail, Message, Connection
+from flask_mail import Mail, Message
 
 
 class EmailService:
@@ -15,8 +15,7 @@ class EmailService:
     def is_valid(self):
         email = os.environ.get('MAIL_USERNAME') is not None
         email_password = os.environ.get('MAIL_PASSWORD') is not None
-        default_sender = os.environ.get('MAIL_DEFAULT_SENDER', None) is not None
-        return email and email_password and default_sender
+        return email and email_password
 
     def send(self, recipient: str, subject: str, content: str):
         msg = Message(recipients=[recipient], html=content, subject=subject)
