@@ -2,13 +2,14 @@ import os
 import abc
 import json
 from abc import ABC
+from typing import Tuple
 
 import requests
 
 from usmgpm.services.exceptions import *
 
 
-class Service(ABC):
+class HTTPService(ABC):
     @property
     @abc.abstractmethod
     def url(self):
@@ -17,7 +18,7 @@ class Service(ABC):
         :return: URL where requests are made
         :rtype: str
         """
-        return ''
+        pass
 
     user_agent = 'USM-Games-Page-Manager-0.1a'
     authorization = None
@@ -77,7 +78,7 @@ class Service(ABC):
         except ValueError:
             return decoded
 
-    def get(self, path: str, params: dict = None):
+    def get(self, path: str, params: dict = None, **kwargs):
         """
         Make a GET request to the given path.
         :param path: The path in the service where to make the request
@@ -87,11 +88,11 @@ class Service(ABC):
         :return: The returned JSON serialized as a dict
         :rtype: dict
         """
-        req = requests.get(os.path.join(self.url, path), headers=self.headers, params=params)
+        req = requests.get(os.path.join(self.url, path), headers=self.headers, params=params, **kwargs)
         data = self._process_response(req)
         return data
 
-    def post(self, path: str = None, data: dict = None):
+    def post(self, path: str = None, data: dict = None, **kwargs):
         """
         Make a POST request to the given path.
         :param path: The path in the service where to make the request
@@ -102,11 +103,11 @@ class Service(ABC):
         :rtype: dict
         """
         final_url = self.url if path is None else os.path.join(self.url, path)
-        req = requests.post(final_url, json=data, headers=self.headers)
+        req = requests.post(final_url, json=data, headers=self.headers, **kwargs)
         data = self._process_response(req)
         return data
 
-    def put(self, path: str, data: dict = None):
+    def put(self, path: str, data: dict = None, **kwargs):
         """
         Make a PUT request to the given path.
         :param path: The path in the service where to make the request
@@ -116,11 +117,11 @@ class Service(ABC):
         :return: The returned JSON serialized as a dict
         :rtype: dict
         """
-        req = requests.put(os.path.join(self.url, path), json=data, headers=self.headers)
+        req = requests.put(os.path.join(self.url, path), json=data, headers=self.headers, **kwargs)
         data = self._process_response(req)
         return data
 
-    def patch(self, path: str, data: dict = None):
+    def patch(self, path: str, data: dict = None, **kwargs):
         """
         Make a PATCH request to the given path.
         :param path: The path in the service where to make the request
@@ -130,11 +131,11 @@ class Service(ABC):
         :return: The returned JSON serialized as a dict
         :rtype: dict
         """
-        req = requests.patch(os.path.join(self.url, path), json=data, headers=self.headers)
+        req = requests.patch(os.path.join(self.url, path), json=data, headers=self.headers, **kwargs)
         data = self._process_response(req)
         return data
 
-    def delete(self, path: str):
+    def delete(self, path: str, **kwargs):
         """
         Make a DELETE request to the given path.
         :param path: The path in the service where to make the request
@@ -142,6 +143,6 @@ class Service(ABC):
         :return: The returned JSON serialized as a dict
         :rtype: dict
         """
-        req = requests.delete(os.path.join(self.url, path), headers=self.headers)
+        req = requests.delete(os.path.join(self.url, path), headers=self.headers, **kwargs)
         data = self._process_response(req)
         return data

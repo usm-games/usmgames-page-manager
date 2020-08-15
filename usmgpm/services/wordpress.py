@@ -1,12 +1,12 @@
 from usmgpm.services.wp_models.wp_user import WPUser
 from usmgpm.models.challenge import ChallengeType
 
-from usmgpm.services.service import Service, ForbiddenError
+from usmgpm.services.httpservice import HTTPService, ForbiddenError
 from usmgpm.services.wp_models import WPAuth
 from usmgpm.services.wp_models import WPChallenge
 
 
-class WordPressService(Service):
+class WordPressService(HTTPService):
     saved_me: WPUser = None
 
     @property

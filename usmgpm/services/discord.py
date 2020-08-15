@@ -1,10 +1,10 @@
 import os
 
 from usmgpm.models.challenge import Challenge
-from usmgpm.services.service import Service
+from usmgpm.services.httpservice import HTTPService
 
 
-class DiscordWebhookService(Service):
+class DiscordWebhookService(HTTPService):
 
     @property
     def url(self):

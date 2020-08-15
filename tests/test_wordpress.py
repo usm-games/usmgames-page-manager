@@ -18,7 +18,7 @@ def app():
 
 
 def test_login():
-    from usmgpm.services.service import UnauthorizedError
+    from usmgpm.services.httpservice import UnauthorizedError
     from usmgpm.services.wordpress import WordPressService
 
     service = WordPressService()
@@ -57,7 +57,7 @@ def test_retrieve_challenges():
 def test_publish_challenge():
     from usmgpm.models.challenge import ChallengeType
     from usmgpm.services.wp_models import WPChallenge
-    from usmgpm.services.service import UnauthorizedError, ForbiddenError
+    from usmgpm.services.httpservice import UnauthorizedError, ForbiddenError
     from usmgpm.services.wordpress import WordPressService
 
     challenge = WPChallenge('Title', ChallengeType.PROGRAMMING, 'Description')
