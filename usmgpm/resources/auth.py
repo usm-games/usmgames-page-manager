@@ -22,12 +22,15 @@ register_parser.add_argument('display_name', type=str, required=False)
 register_parser.add_argument('admin', type=bool, default=False)
 
 
-def generate_username(real_name: str, used_usernames: List[str]):
+def generate_username(real_name: str, used_usernames: List[str] = None):
     username = unidecode.unidecode(real_name)
     username = '.'.join(username.split()).lower()
 
     alphabet = string.ascii_letters + string.digits + '.'
     username = ''.join([c for c in username if c in alphabet])
+    if used_usernames is None:
+        return username
+
     count = 0
     suffix = ''
     while username + suffix in used_usernames:
@@ -85,7 +88,7 @@ class Users(Resource):
         display_name = args['display_name']
         is_admin = args['admin']
 
-        users = service.get_users(context='edit')
+        users = service.get_users(context='edit', search=generate_username(display_name), fields=['username'])
         if email in [user.email for user in users]:
             return throw_error('EMAIL_IN_USE')
         username = generate_username(display_name, [user.username for user in users])
