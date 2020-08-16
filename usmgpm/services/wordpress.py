@@ -1,3 +1,5 @@
+from typing import List
+
 from usmgpm.services.wp_models.wp_user import WPUser
 from usmgpm.models.challenge import ChallengeType
 
@@ -85,11 +87,16 @@ class WordPressService(HTTPService):
             data['roles'] = ['subscriber']
         return WPUser.from_json(self.post(endpoint, data))
 
-    def get_users(self, context=None):
+    def get_users(self, context=None, search: str = None, fields: List[str] = None, per_page: int = 50):
         endpoint = f"wp/v2/users"
         params = {}
         if context is not None:
             params['context'] = context
+        if search is not None:
+            params['search'] = search
+            params['per_page'] = per_page
+        if fields is not None:
+            params['_fields'] = ','.join(fields)
         return list(map(WPUser.from_json, self.get(endpoint, params)))
 
     def get_user(self, user_id: int, context=None):

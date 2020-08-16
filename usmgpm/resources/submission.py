@@ -1,3 +1,5 @@
+from typing import List
+
 from flask import jsonify, g
 from flask_restful import Resource, reqparse
 
@@ -37,7 +39,11 @@ class ChallengeSubmissionList(Resource):
         args = get_submission_parser.parse_args()
         if args['not_evaluated']:
             subs_q = subs_q.filter(Submission.approved.is_(None))
-        subs: list = subs_q.all()
+        subs: List[Submission] = subs_q.all()
+        for sub in subs:
+            if sub.username is None:
+                sub.username = service.get_user(sub.user_id).username
+        db.session.commit()
         return jsonify(list(map(lambda x: x.json, subs)))
 
     def post(self, c_id: int):
@@ -68,7 +74,7 @@ class ChallengeSubmissionList(Resource):
         comment = args['comment'].replace(';', '')
         content = ';'.join([comment] + evidences)
 
-        sub = Submission(content=content, challenge_id=c_id, user_id=user.id)
+        sub = Submission(content=content, challenge_id=c_id, user_id=user.id, username=user.username)
         db.session.add(sub)
         db.session.commit()
 
