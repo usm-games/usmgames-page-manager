@@ -51,6 +51,7 @@ class Submission(db.Model):
         return {
             'id': self.id,
             'user_id': self.user_id,
+            'username': self.username,
             'challenge_id': self.challenge_id,
             'submission': self._parse_content(),
             'evaluation': evaluation,
