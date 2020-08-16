@@ -39,11 +39,15 @@ class ChallengeSubmissionList(Resource):
         args = get_submission_parser.parse_args()
         if args['not_evaluated']:
             subs_q = subs_q.filter(Submission.approved.is_(None))
+
         subs: List[Submission] = subs_q.all()
+        updated = False
         for sub in subs:
             if sub.username is None:
                 sub.username = service.get_user(sub.user_id).username
-        db.session.commit()
+                updated = True
+        if updated:
+            db.session.commit()
         return jsonify(list(map(lambda x: x.json, subs)))
 
     def post(self, c_id: int):
