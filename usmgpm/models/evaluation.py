@@ -18,6 +18,8 @@ class Submission(db.Model):
     approved = db.Column(db.Boolean, nullable=True, default=None)
 
     user_id = db.Column(db.Integer, nullable=False)
+    username = db.Column(db.Text, nullable=True)
+
     challenge_id = db.Column(db.Integer, db.ForeignKey(Challenge.id), nullable=False)
 
     submitted = db.Column(db.DateTime, default=datetime.datetime.utcnow)
