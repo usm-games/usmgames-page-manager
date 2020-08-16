@@ -23,12 +23,10 @@ def init_app(create_all=False, testing=False):
     email = os.environ.get('MAIL_USERNAME')
     email_password = os.environ.get('MAIL_PASSWORD')
     if email and email_password:
-        app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-        app.config['MAIL_PORT'] = 465
+        app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
+        app.config['MAIL_PORT'] = os.environ.get('MAIL_PORT', 465)
         app.config['MAIL_USERNAME'] = email
         app.config['MAIL_PASSWORD'] = email_password
-        app.config['MAIL_USE_TLS'] = False
-        app.config['MAIL_USE_SSL'] = True
 
     app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER', None)
     with app.app_context():
